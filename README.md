@@ -12,6 +12,19 @@ ps: less不支持不同单位的值运行, calc中需要给百分比值添加~'x
 示例: <https://kankk.github.io/kankk-demo/grid01/index.html>
 
 ##样式
+###arrowbox01
+带有箭头的盒子  
+!["arrowbox"](https://kankk.github.io/kankk-demo/arrowbox01/arrowbox.png)  
+示例: <https://kankk.github.io/kankk-demo/arrowbox01/index.html>
+
+###three-bars
+纯css表示"三道杠"效果, 常用于小布局中导航栏缩小的图标  
+!["three-bars"](https://kankk.github.io/kankk-demo/three-bars/three-bars.png)  
+主要用到的知识点
+* background-clip: content-box; 规定背景的绘制区域在内容框
+* 使用padding把显示空白/父元素背景部分撑开  
+
+示例: <https://kankk.github.io/kankk-demo/three-bars/index.html>
 
 ##JavaScript
 ###ajax01
@@ -20,3 +33,13 @@ ps: less不支持不同单位的值运行, calc中需要给百分比值添加~'x
 * `jsonp`跨域的基本用法
 * 跨浏览器的XHR对象
 * 跨浏览器的CORS判断
+
+###json01
+原生处理json格式的基本用法  
+`JSON.stringify()`的执行顺序
+1. 如果存在`toJSON()`方法而且能通过它取得有效的值, 则调用该方法, 否则, 返回对象本身
+2. 如果提供了第二个参数, 应用这个函数过滤器, 传入函数过滤器的值是第1步返回的值
+3. 对于第2步返回的每个值进行相应的序列化
+4. 如果提供了第三个参数, 执行相应的格式化  
+
+示例: <https://kankk.github.io/kankk-demo/json01/index.html>
