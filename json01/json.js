@@ -299,8 +299,8 @@ var jsonObject = {
 	"error_code":0,
 }
 
+// 把JavaScript对象序列化为JSON字符串
 function getDataFromJson() {
-  // 把JavaScript对象序列化为JSON字符串
   var jsonText1 = JSON.stringify(jsonObject);
 
   // 第二个参数是一个数组, 返回的结果字符串中只包含"result"和"title"这两个属性
@@ -325,6 +325,19 @@ function getDataFromJson() {
   }, 4);
 
   return jsonText3;
+}
+
+// 把JavaScript对象序列化为JSON字符串
+function getJsonFromString() {
+	var jsonString = getDataFromJson();
+	// 使用eval()函数把JSON字符串转换为JSON对象
+	// 但是这个方法有安全问题, JSON字符串中可能存在恶意代码
+	var jsonObject1 = eval('(' + jsonString + ')');
+
+	// 使用JSON对象的parse()方法把JSON字符串转换为JSON对象
+	var jsonObject2 = JSON.parse(jsonString);
+
+	return jsonObject2;
 }
 
 function showJsonData() {
