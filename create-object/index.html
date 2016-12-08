@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>create object</title>
+</head>
+
+<body>
+    <div>
+        <h4>创建对象的方式</h4>
+        <ul>
+            <li>工厂模式
+                <ul>
+                    <li>不足: 没有解决对象识别的问题(不知道一个对象的类型)</li>
+                </ul>
+            </li>
+            <li>构造函数模式
+                <ul>
+                    <li>不足: 每个方法都要在每个实例上重新创建一遍</li>
+                </ul>
+            </li>
+            <li>原型模式
+                <ul>
+                    <li>不足: 原型中所有属性被多个实例共享, 对于包含引用类型的值来说, 问题就比较突出</li>
+                </ul>
+            </li>
+            <li>构造函数模式和原型模式组合
+                <ul>
+                    <li>创建自定义类型的最常见方式</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <script type="text/javascript" src="createobject.js"></script>
+</body>
+
+</html>

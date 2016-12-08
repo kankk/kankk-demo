@@ -77,7 +77,6 @@ function ajaxLevel2ByCors() {
     request.onerror = function () {
       alert("Request was unsuccessful: " + request.status);
     }
-
     request.send();
   }
 }
