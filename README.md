@@ -31,6 +31,33 @@ ps: less不支持不同单位的值运行, calc中需要给百分比值添加~'x
 
 示例: <https://kankk.github.io/kankk-demo/filter-blur01/index.html>  
 
+### poplayout01: 拥有遮罩层的弹出窗口
+
+多用于弹出拥有遮罩层的窗口登录窗口周围  
+
+!["poplayout01"](https://kankk.github.io/kankk-demo/poplayout01/poplayout0101.png)  
+
+遮罩层(mask)使用absolute布局  
+
+* 通过`height = document.body.scrollHeight`使高度等于页面总高度
+* 通过`width = document.documentElement.clientWidth`使宽度等于视窗大小(不存在水平滚动条情况下)
+* 透明效果使用`background-color: rgba(x, x, x, 0.x)`, 最好不要使用`opacity`, 会让子元素也透明
+* 监听`click`事件, 当点击mask时移除mask
+
+弹出层(poplayout)使用fixed布局
+
+* 自定义函数`showPoplayoutWithMask(poplayout)`接收一个Element元素, 不关心其子元素
+* 通过`offsetHeight`和`offsetWidth`获得poplayout的高度和宽度
+* 通过计算规则算出poplayout的位置使其居中
+* 监听`resize`事件, 当浏览器大小发生改变的时候, 改变poplayout的位置
+* 由于poplayout为mask的子元素, 需要阻止poplayout的`click`事件冒泡. 不然会导致点击poplayout也移除mask  
+
+功能还需要完善: 
+
+* 改变浏览器大小的时候, `document.documentElement.clientHeight`和`clientWidth`会发生抖动  
+
+示例: <https://kankk.github.io/kankk-demo/poplayout01/index.html>  
+
 ##样式
 ###arrowbox01: 带有箭头的盒子  
 
@@ -91,3 +118,5 @@ JSON字符串转换为JSON对象
   * 不足: 原型中所有属性被多个实例共享, 对于包含引用类型的值来说, 问题就比较突出
 * 构造函数模式和原型模式组合  
   * 创建自定义类型的最常见方式 
+
+示例: <https://kankk.github.io/kankk-demo/create-object/index.html>  
