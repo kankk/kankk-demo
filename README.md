@@ -35,7 +35,9 @@ ps: less不支持不同单位的值运行, calc中需要给百分比值添加~'x
 
 多用于弹出拥有遮罩层的窗口登录窗口周围  
 
-!["poplayout01"](https://kankk.github.io/kankk-demo/poplayout01/poplayout0101.png)  
+原生JavaScript 和 jQuery 实现
+
+!["poplayout01"](https://kankk.github.io/kankk-demo/poplayout01/poplayout01.png)  
 
 遮罩层(mask)使用absolute布局  
 
