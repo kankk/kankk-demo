@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>焦点轮播特效 silder01</title>
+</head>
+<link rel="stylesheet" href="../lib/reset.css" media="screen">
+<style type="text/css">
+    /*清除浮动*/
+    /*.clearfix {
+        *zoom: 1;
+    }
+
+    .clear:after {
+        content: '';
+        display: table;
+        clear: both;
+    }*/
+
+    .contains {
+        width: 500px;
+        height: 300px;
+        position: relative;
+        overflow: hidden;
+        /*margin: 30px;*/
+    }
+
+    .list {
+        position: absolute;
+        /*设置和.contains的width一样, 否则第一次加载会闪烁*/
+        left: -500px;
+    }
+
+    .list img {
+      float: left;
+    }
+
+    .buttons {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translate(-50%, 0);
+      margin-left: -5px;
+    }
+    .buttons .button-focus {
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+
+    .buttons span {
+        float: left;
+        width: 10px;
+        height: 10px;
+        background-color: rgba(0, 0, 0, 0.3);
+        margin-left: 5px;
+        margin-right: 5px;
+        border-radius: 50%;
+    }
+
+    .buttons span:hover {
+      background-color: rgba(0, 0, 0, 0.7);
+      cursor: pointer;
+    }
+
+    .arrow {
+      display: none;
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      background-color: rgba(0, 0, 0, 0.3);
+      line-height: 40px;
+      text-align: center;
+      color: white;
+      top: 50%;
+      transform: translate(0, -50%);
+    }
+
+    .contains:hover .arrow{
+      display: block;
+    }
+
+    .arrow:hover {
+      background-color: rgba(0, 0, 0, 0.7);
+      cursor: pointer;
+    }
+
+    #next-js, #next-jquery {
+      right: 10px;
+    }
+
+    #prev-js, #prev-jquery {
+      left: 10px;
+    }
+</style>
+
+<body>
+    <section id="contains-js" class="contains">
+        <div id="list-js" class="list">
+            <img src="images/img06.jpg"/>
+            <img src="images/img01.jpg" />
+            <img src="images/img02.jpg" />
+            <img src="images/img03.jpg" />
+            <img src="images/img04.jpg" />
+            <img src="images/img05.jpg"/>
+            <img src="images/img06.jpg"/>
+            <img src="images/img01.jpg"/>
+        </div>
+        <div id="buttons-js" class="buttons">
+            <span index="1" class="button-focus"></span>
+            <span index="2"></span>
+            <span index="3"></span>
+            <span index="4"></span>
+            <span index="5"></span>
+            <span index="6"></span>
+        </div>
+        <span id="prev-js" class="arrow">&lt;</span>
+        <span id="next-js" class="arrow">&gt;</span>
+    </section>
+
+    <section id="contains-jquery" class="contains">
+        <div id="list-jquery" class="list">
+            <img src="images/img06.jpg"/>
+            <img src="images/img01.jpg" />
+            <img src="images/img02.jpg" />
+            <img src="images/img03.jpg" />
+            <img src="images/img04.jpg" />
+            <img src="images/img05.jpg"/>
+            <img src="images/img06.jpg"/>
+            <img src="images/img01.jpg"/>
+        </div>
+        <div id="buttons-jquery" class="buttons">
+            <span index="1" class="button-focus"></span>
+            <span index="2"></span>
+            <span index="3"></span>
+            <span index="4"></span>
+            <span index="5"></span>
+            <span index="6"></span>
+        </div>
+        <span id="prev-jquery" class="arrow">&lt;</span>
+        <span id="next-jquery" class="arrow">&gt;</span>
+    </section>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.js"></script>
+    <script type="text/javascript" src="js-version.js"></script>
+    <script type="text/javascript" src="jquery-version.js"></script>
+</body>
+
+</html>

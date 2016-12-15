@@ -60,6 +60,17 @@ ps: less不支持不同单位的值运行, calc中需要给百分比值添加~'x
 
 示例: <https://kankk.github.io/kankk-demo/poplayout01/index.html>  
 
+### silder01: 焦点图滚动轮播
+
+原生JavaScript和jQuery两种实现: 
+
+* 通过`float`和`overflow:hidden`让不显示的图片隐藏
+* 通过`relative`定位和控制`left`属性让图片定位到"显示容器"中
+* 通过添加第一张图片的副本和最后一张图片的副本实现无限轮播
+* 通过`setTimeout()`方法实现动画效果和自动轮播功能
+
+实例: <https://kankk.github.io/kankk-demo/silder01/index.html>
+
 ##样式
 ###arrowbox01: 带有箭头的盒子  
 
@@ -121,4 +132,14 @@ JSON字符串转换为JSON对象
 * 构造函数模式和原型模式组合  
   * 创建自定义类型的最常见方式 
 
-示例: <https://kankk.github.io/kankk-demo/create-object/index.html>  
+示例: <https://kankk.github.io/kankk-demo/create-object/index.html>    
+
+## 插件
+
+### slider.js : 滚动轮播
+
+基于jQuery的滚动轮播插件  
+
+示例: <https://kankk.github.io/kankk-demo/plugins/slider.js/index.html>  
+
+文档: <https://kankk.github.io/kankk-demo/plugins/slider.js>  

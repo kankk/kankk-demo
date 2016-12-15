@@ -1,0 +1,65 @@
+/*slider.js 默认样式*/
+
+/*底部小圆点的容器样式, 修改样式切换位置*/
+.slider-buttons {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  margin-left: -5px;
+}
+
+/*底部小圆点的样式*/
+.slider-buttons span {
+    float: left;
+    width: 10px;
+    height: 10px;
+    background-color: rgba(0, 0, 0, 0.3);
+    margin-left: 5px;
+    margin-right: 5px;
+    border-radius: 50%;
+}
+/*当小圆点被选中时候的样式*/
+.slider-buttons .button-focus {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+/*当鼠标悬浮在小圆点上的样式*/
+.slider-buttons span:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+  cursor: pointer;
+}
+
+/*左右切换箭头的公共样式*/
+.slider-arrow {
+  display: none;
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background-color: rgba(0, 0, 0, 0.3);
+  line-height: 40px;
+  text-align: center;
+  color: white;
+  top: 50%;
+  transform: translate(0, -50%);
+}
+
+/*当鼠标悬浮在slider容器中时候, 显示左右切换箭头*/
+.slider:hover .slider-arrow{
+  display: block;
+}
+
+/*当鼠标悬浮在左右切换箭头时的样式*/
+.slider-arrow:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+  cursor: pointer;
+}
+
+/*右箭头的位置*/
+.slider-next {
+  right: 10px;
+}
+
+/*左箭头的位置*/
+.slider-prev {
+  left: 10px;
+}

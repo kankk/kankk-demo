@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>轮播插件 demo</title>
+  </head>
+  <link rel="stylesheet" href="../../lib/reset.css" media="screen" title="no title">
+  <link rel="stylesheet" href="slider.css" media="screen" title="no title">
+  <style type="text/css">
+  #slider1 {
+    width: 500px;
+    height: 300px;
+  }
+  </style>
+  <body>
+    <section id="slider1">
+      <img src="images/img01.jpg" alt="img01">
+      <img src="images/img02.jpg" alt="img02">
+      <img src="images/img03.jpg" alt="img03">
+      <img src="images/img04.jpg" alt="img04">
+      <img src="images/img05.jpg" alt="img05">
+      <img src="images/img06.jpg" alt="img06">
+    </section>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.js"></script>
+    <script src="jquery.slider.js"></script>
+    <script type="text/javascript">
+      $('#slider1').slider({
+        isWithbuttons: true,
+        isWitharrow: true,
+        isAutoslider: true,
+        moveSpeed: 300,
+      });
+    </script>
+  </body>
+</html>
