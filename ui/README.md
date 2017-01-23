@@ -80,7 +80,7 @@ ps: less不支持不同单位的值运行, calc中需要给百分比值添加~'x
 ###three-bars: 纯css表示"三道杠"效果
 常用于小布局中导航栏缩小的图标  
 
-!["three-bars"](https://kankk.github.io/kankk-demo/three-bars/three-bars.png)  
+!["three-bars"](https://kankk.github.io/kankk-demo/ui/three-bars/three-bars.png)  
 
 * `background-clip: content-box`; 规定背景的绘制区域在内容框
 * 使用`padding`把显示空白/父元素背景部分撑开
@@ -90,7 +90,7 @@ ps: less不支持不同单位的值运行, calc中需要给百分比值添加~'x
 
 ### triangle: 纯css表示一个三角形/梯形  
 
-!["triangle"](https://kankk.github.io/kankk-demo/ui/riangle/triangle.png)  
+!["triangle"](https://kankk.github.io/kankk-demo/ui/triangle/triangle.png)  
 
 * `width:0px`和`height:0px`, 调整width或者height的值可以创建梯形  
 * 颜色使用`transparent`表示透明  
