@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>ball01 demo</title>
+  </head>
+  <style media="screen">
+    body {
+      background-color: #000;
+    }
+    .ball-box {
+      width: 300px;
+      height: 300px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+
+      /*该属性定义3D元素所基于的X轴和Y轴, 该属性允许你改变3D元素的底部位置
+      当为元素定义perspective-origin属性时, 其子元素会获得透视效果, 而不是元素本身*/
+      /*perspective-origin: 50% 50%;*/
+      /*该属性定义3D元素距视图的距离, 以像素计算. 该属性允许你改变3D元素查看的3D元素的视图
+      当为元素定义perspective属性时, 其子元素会获得透视效果, 而不是元素本身*/
+      /*perspective: 2000px;*/
+    }
+    @keyframes rotate3d {
+      0% {
+        transform: rotateZ(-30deg) rotateY(0);
+      }
+      100% {
+        transform: rotateZ(-30deg) rotateY(360deg);
+      }
+    }
+    .ball {
+      height: 100%;
+      transform-style: preserve-3d;
+      -webkit-animation: rotate3d 30s infinite linear;
+    }
+    .ball:after {
+      content: '';
+      width: 1px;
+      height: 500px;
+      background-color: #ff0;
+      display: block;
+      position: absolute;
+      left: 0;
+      top: 0;
+      transform: translateX(150px) translateY(-100px);
+    }
+    .ball > div {
+      border: 1px #fff solid;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 100%;
+    }
+    .ball .line-1 {
+      transform: rotateY(0);
+    }
+    .ball .line-2 {
+      transform: rotateY(36deg);
+    }
+    .ball .line-3 {
+      transform: rotateY(72deg);
+    }
+    .ball .line-4 {
+      transform: rotateY(108deg);
+    }
+    .ball .line-5 {
+      transform: rotateY(144deg);
+    }
+  </style>
+  <body>
+    <div class="ball-box">
+      <div class="ball">
+        <div class="line-1"></div>
+        <div class="line-2"></div>
+        <div class="line-3"></div>
+        <div class="line-4"></div>
+        <div class="line-5"></div>
+      </div>
+    </div>
+  </body>
+</html>
