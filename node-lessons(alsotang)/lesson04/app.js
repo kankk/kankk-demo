@@ -103,7 +103,7 @@ function getScore(topicObj) {
     });
 }
 
-function userPromise() {
+function usePromise() {
     getTopicUrls().then(topicUrls => {
         const ps = [];
         for (let topicUrl of topicUrls) {
@@ -124,4 +124,4 @@ function userPromise() {
 }
 
 // useEventproxy();
-userPromise();
+usePromise();
