@@ -12,6 +12,11 @@
 * absolute + transform
 * flex + align-items
 
+## 水平垂直居中
+* absolute + transform
+* inline-block + text-align + table-cell + vertical-align
+* flex + justify-content + align-items
+
 # 水平居中
 ## horizontal01
 margin + 定宽
@@ -174,3 +179,61 @@ flex + align-items
 ```
 * `flex`有兼容性问题
 
+# 水平垂直居中
+## horizontalVertical01
+absolute + transform
+```html
+<div class="parent">
+  <div class="child">Demo</div>
+</div>
+
+<style>
+  .parent {
+    position: relative;
+  }
+  .child {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+</style>
+```
+* 绝对定位脱离文档流, 不会对后续元素的布局造成影响
+
+## horizontalVertical02
+inline-block + text-align + table-cell + vertical-align
+```html
+<div class="parent">
+  <div class="child">Demo</div>
+</div>
+
+<style>
+  .parent {
+    text-align: center;
+    display: table-cell;
+    vertical-align: middle;
+  }
+  .child {
+    display: inline-block;
+  }
+</style>
+```
+
+
+## horizontalVertical03
+flex + justify-content + align-items
+```html
+<div class="parent">
+  <div class="child">Demo</div>
+</div>
+
+<style>
+  .parent {
+    display: flex;
+    justify-content: center; /* 水平居中 */
+    align-items: center; /*垂直居中*/
+  }
+</style>
+```
+* 只需设置父节点属性, 无需设置子元素
