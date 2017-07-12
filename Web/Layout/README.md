@@ -237,3 +237,115 @@ flex + justify-content + align-items
 </style>
 ```
 * 只需设置父节点属性, 无需设置子元素
+
+# 两列布局(定宽+自定义)
+## twoColumns01
+float + margin
+```html
+<div class="parent">
+  <div class="left">
+    <p>left</p>
+  </div>
+  <div class="right">
+    <p>right</p>
+    <p>right</p>
+  </div>
+</div>
+
+<style>
+  .left {
+    float: left;
+    width: 100px;
+  }
+  .right {
+    margin-left: 100px
+    /*间距可再加入 margin-left */
+  }
+</style>
+```
+
+## twoColumns02
+float + overflow
+```html
+<div class="parent">
+  <div class="left">
+    <p>left</p>
+  </div>
+  <div class="right">
+    <p>right</p>
+    <p>right</p>
+  </div>
+</div>
+
+<style>
+  .left {
+    float: left;
+    width: 100px;
+  }
+  .right {
+    overflow: hidden;
+  }
+</style>
+```
+* 通过`overflow: hidden`会触发BFC模式(Block Formatting Context)块级格式上下文.
+
+## twoColumns03
+table
+```html
+<div class="parent">
+  <div class="left">
+    <p>left</p>
+  </div>
+  <div class="right">
+    <p>right</p>
+    <p>right</p>
+  </div>
+</div>
+
+<style>
+  .parent {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+  }
+  .left {
+    display: table-cell;
+    width: 100px;
+  }
+  .right {
+    display: table-cell;
+    /*宽度为剩余宽度*/
+  }
+</style>
+```
+* `table`的显示特性为每列的单元格宽度和一定等于表格宽度. `table-layout: fixed`可以加速渲染, 也是设置布局优先.
+* `table-cell`中不可以设置`margin`但是可以设置`padding`来设置间距
+
+## twoColumns04
+flex
+```html
+<div class="parent">
+  <div class="left">
+    <p>left</p>
+  </div>
+  <div class="right">
+    <p>right</p>
+    <p>right</p>
+  </div>
+</div>
+
+<style>
+  .parent {
+    display: flex;
+  }
+  .left {
+    width: 100px;
+    margin-left: 20px;
+  }
+  .right {
+    flex: 1;
+  }
+</style>
+```
+* 低版本浏览器兼容问题
+* 性能问题, 只适合小范围布局
