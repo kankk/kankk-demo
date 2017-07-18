@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>innerWidth and innerHeight</title>
+</head>
+
+<body>
+  <div>
+    <p id="display"></p>
+  </div>
+  <script type="text/javascript">
+    var pageWidth = window.innerWidth,
+      pageHeight = window.innerHeight;
+
+    if (typeof pageWidth != 'number') {
+      // 判断页面是否处于标准模式
+      if (document.compatMode == 'CSS1Compat') {
+        pageWidth = document.documentElement.clientWidth;
+        pageHeight = document.documentElement.clientHeight;
+      } else {
+        pageWidth = document.body.clientWidth;
+        pageHeight = document.body.clientHeight;
+      }
+    }
+    document.getElementById('display').innerHTML = 'pageWidth: ' + pageWidth + '; pageHeight: ' + pageHeight + ';';
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>screenX and screenY</title>
+</head>
+
+<body>
+  <div>
+    <p id="display"></p>
+  </div>
+  <script type="text/javascript">
+    var leftPos = (typeof window.screenLeft == 'number') ? window.screenLeft : window.screenX;
+    var topPos = (typeof window.screenTop == 'number') ? window.screenTop : window.screenY;
+    document.getElementById('display').innerHTML = 'leftPos: ' + leftPos + '; topPos: ' + topPos + ';';
+  </script>
+</body>
+
+</html>
