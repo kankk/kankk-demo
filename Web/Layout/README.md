@@ -17,6 +17,11 @@
 * inline-block + text-align + table-cell + vertical-align
 * flex + justify-content + align-items
 
+## 等分布局
+* float
+* flex
+* table
+
 # 水平居中
 ## horizontal01
 margin + 定宽
@@ -349,3 +354,102 @@ flex
 ```
 * 低版本浏览器兼容问题
 * 性能问题, 只适合小范围布局
+
+# 等分布局
+## equalDivide01
+```html
+<div class="parent">
+  <div class="column">
+    <p>1</p>
+  </div>
+  <div class="column">
+    <p>2</p>
+  </div>
+  <div class="column">
+    <p>3</p>
+  </div>
+  <div class="column">
+    <p>4</p>
+  </div>
+</div>
+<style>
+  .parent {
+    margin-left: -20px;
+  }
+  .column {
+    float: left;
+    width: 25%;
+    padding-left: 20px;
+    box-sizing: border-box;
+  }
+</style>
+```
+* 完美兼容IE8以上版本
+
+## equalDivide02
+```html
+<div class="parent">
+  <div class="column">
+    <p>1</p>
+  </div>
+  <div class="column">
+    <p>2</p>
+  </div>
+  <div class="column">
+    <p>3</p>
+  </div>
+  <div class="column">
+    <p>4</p>
+  </div>
+</div>
+
+
+<style>
+  .parent {
+    display: flex;
+  }
+  .column {
+    flex: 1;
+  }
+  .column+.column { /* 相邻兄弟选择器 */
+    margin-left: 20px;
+  }
+</style>
+```
+* 兼容问题
+
+## equalDivide03
+```html
+<div class='parent-fix'>
+  <div class="parent">
+    <div class="column">
+      <p>1</p>
+    </div>
+    <div class="column">
+      <p>2</p>
+    </div>
+    <div class="column">
+      <p>3</p>
+    </div>
+    <div class="column">
+      <p>4</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .parent-fix {
+    margin-left: -20px;
+  }
+  .parent {
+    display: table;
+    width: 100%;
+    /*可以布局优先，也可以单元格宽度平分在没有设置的情况下*/
+    table-layout: fixed;
+  }
+  .column {
+    display: table-cell;
+    padding-left: 20px;
+  }
+</style>
+```
