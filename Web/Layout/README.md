@@ -453,3 +453,92 @@ flex
   }
 </style>
 ```
+
+# 等高布局
+## equalHeight01
+`table`的特性为每列等宽, 每行等高
+```html
+<div class="parent">
+  <div class="left">
+    <p>left</p>
+  </div>
+  <div class="right">
+    <p>right</p>
+    <p>right</p>
+  </div>
+</div>
+
+<style>
+  .parent {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+  }
+  .left {
+    display: table-cell;
+    width: 100px;
+  }
+  .right {
+    display: table-cell;
+    /*宽度为剩余宽度*/
+  }
+</style>
+```
+
+## euqalHeight02
+```html
+<div class="parent">
+  <div class="left">
+    <p>left</p>
+  </div>
+  <div class="right">
+    <p>right</p>
+    <p>right</p>
+  </div>
+</div>
+
+<style>
+  .parent {
+    display: flex;
+  }
+  .left {
+    width: 100px;
+  }
+  .right {
+    flex: 1;
+  }
+</style>
+```
+* 这里实际上使用了`align-items: stretch`, flex默认的`align-items`的值为`stretch`
+
+## equalHeight03
+```html
+<div class="parent">
+  <div class="left">
+    <p>left</p>
+  </div>
+  <div class="right">
+    <p>right</p>
+    <p>right</p>
+  </div>
+</div>
+
+<style>
+  .parent {
+    overflow: hidden;
+  }
+  .left,
+  .right {
+    padding-bottom: 9999px;
+    margin-bottom: -9999px;
+  }
+  .left {
+    float: left;
+    width: 100px;
+  }
+  .right {
+    overflow: hidden;
+  }
+</style>
+```
+* 此方法为伪等高(只有背景显示高度相同), 左右真实的高度其实不相等, 兼容性较好
