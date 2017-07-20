@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>navigator</title>
+</head>
+
+<body>
+  <div id="display">
+  </div>
+  <script type="text/javascript">
+    var displayDiv = document.getElementById('display');
+    for (var i = 0; i < navigator.plugins.length; i++) {
+      var p = document.createElement('p');
+      p.innerHTML = navigator.plugins[i].name;
+      displayDiv.appendChild(p);
+    }
+  </script>
+</body>
+
+</html>

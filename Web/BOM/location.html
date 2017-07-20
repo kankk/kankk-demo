@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>location</title>
+</head>
+
+<body>
+  <div id="display">
+  </div>
+  <script type="text/javascript">
+    function getQueryStringArgs() {
+      var qs = (window.location.search.length > 0 ? window.location.search.substring(1) : "");
+      var args = {};
+
+      var items = qs.length ? qs.split("&") : [];
+      var item = null,
+        name = null,
+        value = null,
+        i = 0,
+        len = items.length;
+
+      for (i = 0; i < len; i++) {
+        item = items[i].split('=');
+        name = decodeURIComponent(item[0]);
+        value = decodeURIComponent(item[1]);
+
+        if (name.length) {
+          args[name] = value;
+        }
+      }
+
+      return args;
+    }
+
+    var displayDiv = document.getElementById('display');
+    var p1 = document.createElement('p');
+    p1.innerHTML = `location.hash: ${window.location.hash}`;
+    displayDiv.appendChild(p1);
+    var p2 = document.createElement('p');
+    p2.innerHTML = `location.host: ${window.location.host}`;
+    displayDiv.appendChild(p2);
+    var p3 = document.createElement('p');
+    p3.innerHTML = `location.hostname: ${window.location.hostname}`;
+    displayDiv.appendChild(p3);
+    var p4 = document.createElement('p');
+    p4.innerHTML = `location.href: ${window.location.href}`;
+    displayDiv.appendChild(p4);
+    var p5 = document.createElement('p');
+    p5.innerHTML = `location.pathname: ${window.location.pathname}`;
+    displayDiv.appendChild(p5);
+    var p6 = document.createElement('p');
+    p6.innerHTML = `location.port: ${window.location.port}`;
+    displayDiv.appendChild(p6);
+    var p7 = document.createElement('p');
+    p7.innerHTML = `location.protocol: ${window.location.protocol}`;
+    displayDiv.appendChild(p7);
+    var p8 = document.createElement('p');
+    p8.innerHTML = `location.search: ${window.location.search}`;
+    displayDiv.appendChild(p8);
+    console.log(getQueryStringArgs());
+  </script>
+</body>
+
+</html>
