@@ -84,3 +84,7 @@
 * scrollWidth
 * scrollLeft
 * scrollTop
+
+## 遍历
+* NodeIterator: document.createNodeIterator()
+* TreeWalker: document.createTreewalker()
