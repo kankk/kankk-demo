@@ -59,3 +59,28 @@
 ```html
 <meta http-equiv="X-UA-Compatible" content="ie=ieVersion">
 ```
+
+# 样式
+## 访问元素的样式
+任何支持style特性的HTML元素在JavaScript中都有一个对应的style属性, 这个style对象是CSSStyleDeclaration实例, 包含着通过HTML的style特性指定的任所有样式信息, 但不包含与外部样式表或嵌入样式表经层叠而来的样式.
+
+## 计算的样式
+* 非IE: document.defaultView.getComputedStyle(element, null)
+* IE: element.currentStyle
+* 无论在哪个浏览器中, 最重要的一条是要记住所有计算的样式都是只读的; 不能修改计算后样式对象中的CSS属性
+
+## 元素大小
+### 偏移值
+* offsetHeight
+* offsetWidth
+* offsetLeft
+* offsetTop
+
+### 客户区大小
+* clientWidht和clientHeight: 元素内容及其内边距所占据的空间大小
+
+### 滚动大小
+* scrollHeight
+* scrollWidth
+* scrollLeft
+* scrollTop

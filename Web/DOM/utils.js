@@ -74,3 +74,62 @@ function loadStyleString(css) {
   var head = document.getElementsByTagName("head")[0];
   head.appendChild(style);
 }
+
+// 创建规则
+function insertRule(sheet, selectorText, cssText, position) {
+  if (sheet.insertRule) {
+    sheet.insertRule(selectorText + "{" + cssText + "}", position);
+  } else if (sheet.addRule) { // IE
+    sheet.addRule(selectorText, cssText, position);
+  }
+}
+
+// 删除规则
+function deleteRule(sheet, index) {
+  if (sheet.deleteRule) {
+    sheet.deleteRule(index);
+  } else if (sheet.removeRule) { // IE
+    sheet.removeRule(index);
+  }
+}
+
+// 元素的左偏移量
+function getElementLeft(element) {
+  var actualLeft = element.offsetLeft;
+  var current = element.offsetParent;
+
+  while (current !== null) {
+    actualLeft += current.offsetLeft;
+    current = current.offsetParent;
+  }
+
+  return actualLeft;
+}
+
+// 元素的上偏移量
+function getElementTop(element) {
+  var actualTop = element.offsetTop;
+  var current = element.offsetParent;
+
+  while (current !== null) {
+    actualTop += current.offsetTop;
+    current = current.offsetParent;
+  }
+
+  return actualTop;
+}
+
+// 客户区大小(滚动条占用的空间不计算在内)
+function getViewport() {
+  if (document.compatMode == "BackCompat") {
+    return {
+      width: document.body.clientWidth,
+      heith: document.body.clientHeight
+    }
+  } else {
+    return {
+      width: document.documentElement.clientWidth,
+      height: document.documentElement.clientHeight
+    }
+  }
+}
