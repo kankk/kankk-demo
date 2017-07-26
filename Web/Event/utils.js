@@ -63,6 +63,15 @@ var EventUtil = {
     }
   },
 
+  // 获取字符编码
+  getCharCode: function (event) {
+    if (typeof event.charCode == "number") {
+      return event.charCode;
+    } else {
+      return event.keyCode;
+    }
+  },
+
   // 获取鼠标滚轮增量值
   getWheelDelta: function (event) {
     if (event.wheelDelta) {
