@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Canvas 01</title>
+</head>
+
+<body>
+  <canvas id="drawing" width="200" height="200">A drawing of something.</canvas>
+  <script>
+    window.onload = function () {
+      var drawing = document.getElementById("drawing");
+
+      // 确定浏览器支持<canvas>元素
+      if (drawing.getContext) {
+        var context = drawing.getContext("2d");
+        // context.strokeStyle = "red";
+        // context.fillStyle = "#0000ff";
+
+        // 绘制矩形
+        // 红色矩形
+        context.fillStyle = "#ff0000";
+        context.fillRect(10, 10, 50, 50)
+        ;
+        // 半透明的蓝色矩形
+        context.fillStyle = "rgba(0, 0, 255, 0.5)";
+        context.fillRect(30, 30, 50, 50);
+
+        // 绘制描边矩形
+        // 红色矩形
+        context.strokeStyle = "#ff0000";
+        context.strokeRect(50, 50, 100, 50);
+        // 半透明的蓝色矩形
+        context.strokeStyle = "rgba(0, 0, 255, 0.5)";
+        context.strokeRect(70, 70, 50, 50);
+
+        // 清除小矩形
+        context.clearRect(40, 40, 10, 10);
+      }
+    }
+  </script>
+</body>
+
+</html>

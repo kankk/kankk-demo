@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Canvas 04</title>
+</head>
+
+<body>
+  <canvas id="drawing" width="200" height="200">A drawing of something.</canvas>
+  <script>
+    window.onload = function () {
+      var drawing = document.getElementById("drawing");
+
+      // 确定浏览器支持<canvas>元素
+      if (drawing.getContext) {
+        var context = drawing.getContext("2d");
+
+        // 设置渐变
+        var gradient = context.createLinearGradient(30, 30, 70, 70);
+        gradient.addColorStop(0, "white");
+        gradient.addColorStop(1, "black");
+
+        context.fillStyle = "#ff0000";
+        context.fillRect(10, 10, 50, 50);
+
+        context.fillStyle = gradient;
+        context.fillRect(30, 30, 50, 50);
+      }
+    }
+  </script>
+</body>
+
+</html>
