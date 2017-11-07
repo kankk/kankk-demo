@@ -18,3 +18,9 @@
 
 # demo2-02
 在demo2-01的基础上使用自定义事件和代理事件
+
+# demo3-01
+Object.create的polyfill
+
+# demo3-02
+简单的数据模型demo
