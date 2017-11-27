@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <ul id="list1">
+            <li id="list1-1">list1-1</li>
+            <li id="list1-2">list1-2</li>
+            <li id="list1-3">list1-3</li>
+        </ul>
+        <ul id="list2">
+            <li id="list2-1">list2-1</li>
+            <li id="list2-2">list2-2</li>
+            <li id="list2-3">list2-3</li>
+        </ul>
+    </div>
+    <script>
+        var list1 = document.getElementById('list1');
+        var list2 = document.getElementById('list2');
+        var list1_4 = document.createElement('li');
+        list1_4.setAttribute('id', 'list1-4');
+        list1_4.innerHTML = 'list1-4';
+        var list1_3 = document.getElementById('list1-3');
+        list1.appendChild(list1_4);
+        list2.appendChild(list1_3);
+    </script>
+</body>
+</html>
