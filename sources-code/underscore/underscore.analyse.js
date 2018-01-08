@@ -3,6 +3,11 @@
 //     (c) 2009-2017 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 //     Underscore may be freely distributed under the MIT license.
 
+// note:
+// 不安全的undefined
+// 因为undefined可能会被重复赋值导致 x === undefined判断结果不正确
+// 所有全文使用void 0 ( ==> undefined )来代替undefined判断
+
 (function() {
 
   // Baseline setup
@@ -16,21 +21,21 @@
             this ||
             {};
 
-  // Save the previous value of the `_` variable.
+  // 保存当前全局上绑定在_上的对象
   var previousUnderscore = root._;
 
-  // Save bytes in the minified (but not gzipped) version:
+  // 使用局部变量
+  // 避免冗长的代码书写
+  // 减少对象成员的访问深度, 能提高一定的性能
   var ArrayProto = Array.prototype, ObjProto = Object.prototype;
   var SymbolProto = typeof Symbol !== 'undefined' ? Symbol.prototype : null;
 
-  // Create quick reference variables for speed access to core prototypes.
   var push = ArrayProto.push,
       slice = ArrayProto.slice,
       toString = ObjProto.toString,
       hasOwnProperty = ObjProto.hasOwnProperty;
 
-  // All **ECMAScript 5** native function implementations that we hope to use
-  // are declared here.
+  // ES5的原生方法
   var nativeIsArray = Array.isArray,
       nativeKeys = Object.keys,
       nativeCreate = Object.create;
@@ -1387,10 +1392,12 @@
   // Utility Functions
   // -----------------
 
-  // Run Underscore.js in *noConflict* mode, returning the `_` variable to its
-  // previous owner. Returns a reference to the Underscore object.
+  // 重命名underscore对象
+  // 返回一个underscore对象, 把_所有权交还给原来的拥有者
   _.noConflict = function() {
+    // 恢复原来_指向的对象
     root._ = previousUnderscore;
+    // 返回underscore对象
     return this;
   };
 
