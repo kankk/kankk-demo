@@ -70,7 +70,12 @@
   // Internal function that returns an efficient (for current engines) version
   // of the passed-in callback, to be repeatedly applied in other Underscore
   // functions.
+  // func 待优化回调函数
+  // context 执行上下文
+  // argCount 参数个数
+  // 总体思路: 传入待优化的回调函数func, 以及迭代回调需要的参数个数argCount, 根据参数个数分情况进行优化
   var optimizeCb = function(func, context, argCount) {
+    // 一定要保证回调的执行上下文存在
     if (context === void 0) return func;
     switch (argCount) {
       case 1: return function(value) {
@@ -82,6 +87,10 @@
       case 3: return function(value, index, collection) {
         return func.call(context, value, index, collection);
       };
+      // accumulator: 累加器
+      // value: 迭代元素
+      // index: 迭代索引
+      // collection: 当前迭代集合
       case 4: return function(accumulator, value, index, collection) {
         return func.call(context, accumulator, value, index, collection);
       };
@@ -97,16 +106,23 @@
   // element in a collection, returning the desired result — either `identity`,
   // an arbitrary callback, a property matcher, or a property accessor.
   var cb = function(value, context, argCount) {
+    // 是否用自定义的iteratee, underscore支持通过覆盖_.iteratee属性自定义iteratee
+    // 发布版1.8.3不支持
     if (_.iteratee !== builtinIteratee) return _.iteratee(value, context);
+    // value为null, 返回其自身的值
     if (value == null) return _.identity;
+    // value为Function, 通过内置函数optimizeCb对其进行优化
     if (_.isFunction(value)) return optimizeCb(value, context, argCount);
+    // value为一个对象, 返回iteratt(_.matcher)的目的是想要知道当前被迭代元素是否匹配给定的这个对象
     if (_.isObject(value) && !_.isArray(value)) return _.matcher(value);
+    // value为字面量, 如数字, 字符串等, 它指示了一个对象的属性key, 返回的iteratee(_.property)将用来获得该属性对应的值
     return _.property(value);
   };
 
   // External wrapper for our callback generator. Users may customize
   // `_.iteratee` if they want additional predicate/iteratee shorthand styles.
   // This abstraction hides the internal-only argCount argument.
+  // 首先把内建的iteratt赋值给buildtinIteratee变量
   _.iteratee = builtinIteratee = function(value, context) {
     return cb(value, context, Infinity);
   };
@@ -146,12 +162,15 @@
     return result;
   };
 
+  // 浅获取该key对应的值
   var shallowProperty = function(key) {
     return function(obj) {
+      // void 0 为undefined
       return obj == null ? void 0 : obj[key];
     };
   };
 
+  // 深获取该key对应的值
   var deepGet = function(obj, path) {
     var length = path.length;
     for (var i = 0; i < length; i++) {
@@ -207,7 +226,8 @@
     return results;
   };
 
-  // Create a reducing function iterating left or right.
+  // reduce函数的工厂函数, 用于生成一个reducer, 通过参数决定reduce方向
+  // dir > 0, left; dir <= 0, right
   var createReduce = function(dir) {
     // Wrap code that reassigns argument variables in a separate function than
     // the one that accesses `arguments.length` to avoid a perf hit. (#1991)
@@ -215,19 +235,25 @@
       var keys = !isArrayLike(obj) && _.keys(obj),
           length = (keys || obj).length,
           index = dir > 0 ? 0 : length - 1;
+      // memo 用来记录最新的reduce结果
+      // 如果reduce没有初始化memo, 则默认为首个元素
       if (!initial) {
         memo = obj[keys ? keys[index] : index];
         index += dir;
       }
       for (; index >= 0 && index < length; index += dir) {
         var currentKey = keys ? keys[index] : index;
+        // 执行reduce回调, 刷新当前值
         memo = iteratee(memo, obj[currentKey], currentKey, obj);
       }
       return memo;
     };
 
     return function(obj, iteratee, memo, context) {
+      // 如果参数正常, 则代表初始化了 memo
       var initial = arguments.length >= 3;
+      // reducer因为引入了累加器, 所以优化函数第三个参数传入了4, 
+      // 这样, 新的迭代回调第一个参数就是当前的累加结果
       return reducer(obj, optimizeCb(iteratee, context, 4), memo, initial);
     };
   };
@@ -1415,11 +1441,15 @@
 
   _.noop = function(){};
 
+  // 获得该属性path对应的值
   _.property = function(path) {
+    // path不为数组
     if (!_.isArray(path)) {
       return shallowProperty(path);
     }
+    // path为数组
     return function(obj) {
+      // 遍历path的元素获取对应key的值
       return deepGet(obj, path);
     };
   };
