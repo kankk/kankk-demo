@@ -407,29 +407,34 @@
     return result;
   };
 
-  // Shuffle a collection.
+  // 获得obj乱序副本, 基于_.sample实现
   _.shuffle = function(obj) {
     return _.sample(obj, Infinity);
   };
 
-  // Sample **n** random values from a collection using the modern version of the
-  // [Fisher-Yates shuffle](http://en.wikipedia.org/wiki/Fisher–Yates_shuffle).
-  // If **n** is not specified, returns a single random element.
-  // The internal `guard` argument allows it to work with `map`.
+  // 从obj随机取出n个样本
+  // 如果是对一个对象进行抽样, 那么是对这个对象的值集合进行抽样
+  // 如果没有设置n, 则随机返回一个元素, 不进行集合乱序
   _.sample = function(obj, n, guard) {
     if (n == null || guard) {
       if (!isArrayLike(obj)) obj = _.values(obj);
       return obj[_.random(obj.length - 1)];
     }
+    // 如果是对象, 乱序key的排序
     var sample = isArrayLike(obj) ? _.clone(obj) : _.values(obj);
     var length = getLength(sample);
+    // 校正参数n, 使得0 <= n < length
     n = Math.max(Math.min(n, length), 0);
     var last = length - 1;
+    // 开始洗牌算法, 洗出来n个就停止
     for (var index = 0; index < n; index++) {
+      // 从[index, last]即剩余未乱序部分获得一个随机位置
       var rand = _.random(index, last);
+      // 交换当前值与随机位置的值
       var temp = sample[index];
       sample[index] = sample[rand];
       sample[rand] = temp;
+      // 此时, 排序后的第一个数据sample[0]已经确定
     }
     return sample.slice(0, n);
   };
