@@ -40,7 +40,8 @@
       nativeKeys = Object.keys,
       nativeCreate = Object.create;
 
-  // Naked function reference for surrogate-prototype-swapping.
+  // constructor的缩写, 用于对象创建
+  // 这种做法是出于性能上的考虑, 避免每次调用baseCreate都要创建空的构造函数
   var Ctor = function(){};
 
   // Create a safe reference to the Underscore object for use below.
@@ -127,37 +128,49 @@
     return cb(value, context, Infinity);
   };
 
-  // Similar to ES6's rest param (http://ariya.ofilabs.com/2013/03/es6-and-rest-parameter.html)
-  // This accumulates the arguments passed into an array, after a given index.
+  // 一个包装器, 包装函数func, 使其支持rest参数 (ps: 现在es6已经支持rest参数了 (x, ...rest))
+  // func 需要rest参数的函数
+  // startIndex 从哪里开始标识rest参数, 如果不传递, 默认最后一个参数为rest参数
   var restArgs = function(func, startIndex) {
     startIndex = startIndex == null ? func.length - 1 : +startIndex;
+    // 返回一个支持rest参数的函数
     return function() {
+      // 校正参数, 避免出现负值情况
       var length = Math.max(arguments.length - startIndex, 0),
           rest = Array(length),
           index = 0;
       for (; index < length; index++) {
         rest[index] = arguments[index + startIndex];
       }
+      // 根据rest参数不同, 分情况调用函数, 需要注意的是, rest参数总是最后一个参数, 否则会有歧义
       switch (startIndex) {
         case 0: return func.call(this, rest);
         case 1: return func.call(this, arguments[0], rest);
         case 2: return func.call(this, arguments[0], arguments[1], rest);
       }
+      // 除了以上三种情况, 更加通用的情况
       var args = Array(startIndex + 1);
+      // 先取得前面的参数
       for (index = 0; index < startIndex; index++) {
         args[index] = arguments[index];
       }
+      // 再拼接上剩余参数
       args[startIndex] = rest;
       return func.apply(this, args);
     };
   };
 
-  // An internal function for creating a new object that inherits from another.
+  // 创建一个对象, 该对象继承自prototype
+  // 并且保证该对象在其原型上挂载属性不会影响所继承的prototype
   var baseCreate = function(prototype) {
     if (!_.isObject(prototype)) return {};
+    // 如果存在原生的创建方法(Object.create), 则用原生的进行创建
     if (nativeCreate) return nativeCreate(prototype);
+    // 利用Ctor这个空函数, 临时设置对象原型
     Ctor.prototype = prototype;
+    // 创建对象, result.__proto__ === prototype
     var result = new Ctor;
+    // 还原Ctor原型
     Ctor.prototype = null;
     return result;
   };
@@ -191,29 +204,33 @@
     return typeof length == 'number' && length >= 0 && length <= MAX_ARRAY_INDEX;
   };
 
-  // Collection Functions
+  // 集合函数
   // --------------------
 
-  // The cornerstone, an `each` implementation, aka `forEach`.
-  // Handles raw objects in addition to array-likes. Treats all
-  // sparse array-likes as if they were dense.
+  // 支持array, 还支持object的迭代
+  // 对object迭代的依据是对象的键序列keys
   _.each = _.forEach = function(obj, iteratee, context) {
+    // 首先要优化回调过程
     iteratee = optimizeCb(iteratee, context);
     var i, length;
+    // 区分数组和对象的迭代过程
     if (isArrayLike(obj)) {
       for (i = 0, length = obj.length; i < length; i++) {
+        // 数组的迭代回调传入三个参数(迭代值, 迭代索引, 迭代对象)
         iteratee(obj[i], i, obj);
       }
     } else {
+      // 获取对象的键序列keys
       var keys = _.keys(obj);
       for (i = 0, length = keys.length; i < length; i++) {
         iteratee(obj[keys[i]], keys[i], obj);
       }
     }
+    // 返回对象自身, 以便进行链式构造
     return obj;
   };
 
-  // Return the results of applying the iteratee to each element.
+  // 一个映射过程就是将各个元素, 按照一定的规则, 逐个映射为新的元素
   _.map = _.collect = function(obj, iteratee, context) {
     iteratee = cb(iteratee, context);
     var keys = !isArrayLike(obj) && _.keys(obj),
@@ -226,8 +243,9 @@
     return results;
   };
 
-  // reduce函数的工厂函数, 用于生成一个reducer, 通过参数决定reduce方向
-  // dir > 0, left; dir <= 0, right
+  // 用于创建reduce函数
+  // dir用于区分reduce方向
+  // initial标识了是否传入了规约起点
   var createReduce = function(dir) {
     // Wrap code that reassigns argument variables in a separate function than
     // the one that accesses `arguments.length` to avoid a perf hit. (#1991)
@@ -250,30 +268,30 @@
     };
 
     return function(obj, iteratee, memo, context) {
-      // 如果参数正常, 则代表初始化了 memo
+      // 如果参数正常, 则代表已经初始化了memo
       var initial = arguments.length >= 3;
-      // reducer因为引入了累加器, 所以优化函数第三个参数传入了4, 
+      // 所有的传入回调都要通过optimizeCb进行优化
+      // reducer因为引入了累加器, 所以优化函数的第三个函数传入了4
       // 这样, 新的迭代回调第一个参数就是当前的累加结果
       return reducer(obj, optimizeCb(iteratee, context, 4), memo, initial);
     };
   };
 
-  // **Reduce** builds up a single result from a list of values, aka `inject`,
-  // or `foldl`.
+  // 从左至右进行reduce
   _.reduce = _.foldl = _.inject = createReduce(1);
 
-  // The right-associative version of reduce, also known as `foldr`.
+  // 从右至左进行reduce
   _.reduceRight = _.foldr = createReduce(-1);
 
-  // Return the first value which passes a truth test. Aliased as `detect`.
+  // 返回obj中满足条件predicate的元素
   _.find = _.detect = function(obj, predicate, context) {
+    // 既能检索数组(_.findIndex), 也能检索对象(_.findKey)
     var keyFinder = isArrayLike(obj) ? _.findIndex : _.findKey;
     var key = keyFinder(obj, predicate, context);
     if (key !== void 0 && key !== -1) return obj[key];
   };
 
-  // Return all the elements that pass a truth test.
-  // Aliased as `select`.
+  // 返回当前迭代元素满足真值检测函数(predicate)为true的元素
   _.filter = _.select = function(obj, predicate, context) {
     var results = [];
     predicate = cb(predicate, context);
@@ -283,13 +301,12 @@
     return results;
   };
 
-  // Return all the elements for which a truth test fails.
+  // 使用_.negate(反义predicate结果)简化实现_.filter的反义_.reject
   _.reject = function(obj, predicate, context) {
     return _.filter(obj, _.negate(cb(predicate)), context);
   };
 
-  // Determine whether all of the elements match a truth test.
-  // Aliased as `all`.
+  // 判断obj的每个元素是否都满足predicate, 返回true/false
   _.every = _.all = function(obj, predicate, context) {
     predicate = cb(predicate, context);
     var keys = !isArrayLike(obj) && _.keys(obj),
@@ -301,8 +318,7 @@
     return true;
   };
 
-  // Determine if at least one element in the object matches a truth test.
-  // Aliased as `any`.
+  // 判断obj的某个元素是否满足predicate, 返回true/false
   _.some = _.any = function(obj, predicate, context) {
     predicate = cb(predicate, context);
     var keys = !isArrayLike(obj) && _.keys(obj),
@@ -314,11 +330,12 @@
     return false;
   };
 
-  // Determine if the array or object contains a given item (using `===`).
-  // Aliased as `includes` and `include`.
+  // 判断obj是否包含item, 可以设置查询起点fromIndex
   _.contains = _.includes = _.include = function(obj, item, fromIndex, guard) {
+    // 如果不是数组, 则根据值查找
     if (!isArrayLike(obj)) obj = _.values(obj);
     if (typeof fromIndex != 'number' || guard) fromIndex = 0;
+    // 判断_.indexOf返回值是否大于-1
     return _.indexOf(obj, item, fromIndex) >= 0;
   };
 
@@ -344,19 +361,18 @@
     });
   });
 
-  // Convenience version of a common use case of `map`: fetching a property.
+  // 取出obj中key对应的值
   _.pluck = function(obj, key) {
+    // 迭代集合, 每个迭代元素返回其对应属性的对应值
     return _.map(obj, _.property(key));
   };
 
-  // Convenience version of a common use case of `filter`: selecting only objects
-  // containing specific `key:value` pairs.
+  // 类似SQL中的where限定符, 获得满足attrs的元素
   _.where = function(obj, attrs) {
     return _.filter(obj, _.matcher(attrs));
   };
 
-  // Convenience version of a common use case of `find`: getting the first object
-  // containing specific `key:value` pairs.
+  // 与_.where类似, 但只返回第一条查询到的记录
   _.findWhere = function(obj, attrs) {
     return _.find(obj, _.matcher(attrs));
   };
@@ -411,29 +427,34 @@
     return result;
   };
 
-  // Shuffle a collection.
+  // 获得obj乱序副本, 基于_.sample实现
   _.shuffle = function(obj) {
     return _.sample(obj, Infinity);
   };
 
-  // Sample **n** random values from a collection using the modern version of the
-  // [Fisher-Yates shuffle](http://en.wikipedia.org/wiki/Fisher–Yates_shuffle).
-  // If **n** is not specified, returns a single random element.
-  // The internal `guard` argument allows it to work with `map`.
+  // 从obj随机取出n个样本
+  // 如果是对一个对象进行抽样, 那么是对这个对象的值集合进行抽样
+  // 如果没有设置n, 则随机返回一个元素, 不进行集合乱序
   _.sample = function(obj, n, guard) {
     if (n == null || guard) {
       if (!isArrayLike(obj)) obj = _.values(obj);
       return obj[_.random(obj.length - 1)];
     }
+    // 如果是对象, 乱序key的排序
     var sample = isArrayLike(obj) ? _.clone(obj) : _.values(obj);
     var length = getLength(sample);
+    // 校正参数n, 使得0 <= n < length
     n = Math.max(Math.min(n, length), 0);
     var last = length - 1;
+    // 开始洗牌算法, 洗出来n个就停止
     for (var index = 0; index < n; index++) {
+      // 从[index, last]即剩余未乱序部分获得一个随机位置
       var rand = _.random(index, last);
+      // 交换当前值与随机位置的值
       var temp = sample[index];
       sample[index] = sample[rand];
       sample[rand] = temp;
+      // 此时, 排序后的第一个数据sample[0]已经确定
     }
     return sample.slice(0, n);
   };
@@ -684,27 +705,38 @@
   };
 
   // Generator function to create the findIndex and findLastIndex functions.
+  // 内置工厂函数, createIndexFinder的增强版
+  // 不仅能查询直接量在集合中的位置, 也支持通过一个真值检测函数查找位置
+  // dir: 搜索方向
   var createPredicateIndexFinder = function(dir) {
     return function(array, predicate, context) {
+      // 如果传入的predicate是一个立即数, 会被cb优化为一个_.property(predicate)函数, 用来获得对象的某个属性
       predicate = cb(predicate, context);
       var length = getLength(array);
       var index = dir > 0 ? 0 : length - 1;
       for (; index >= 0 && index < length; index += dir) {
+        // 只找到第一次满足条件的位置
         if (predicate(array[index], index, array)) return index;
       }
       return -1;
     };
   };
 
-  // Returns the first index on an array-like that passes a predicate test.
+  // 由内置的createPredicateIndexFinder工厂函数创建
+  // 根据条件predicate, 查询元素在array中出现的位置
+  // array: 待搜索数组
+  // predicate: 真值检测函数
+  // context: 执行上下文
   _.findIndex = createPredicateIndexFinder(1);
   _.findLastIndex = createPredicateIndexFinder(-1);
 
-  // Use a comparator function to figure out the smallest index at which
-  // an object should be inserted so as to maintain order. Uses binary search.
+  // 根据比较条件iteratee, 查询obj在array中的位置
+  // 如果失败, 则返回obj应当出现的位置
+  // _.sortedIndex使用二分查找作为查找算法
   _.sortedIndex = function(array, obj, iteratee, context) {
     iteratee = cb(iteratee, context, 1);
     var value = iteratee(obj);
+    // 以下是二分查找算法实现, O(h)=O(log2n)
     var low = 0, high = getLength(array);
     while (low < high) {
       var mid = Math.floor((low + high) / 2);
@@ -713,35 +745,46 @@
     return low;
   };
 
-  // Generator function to create the indexOf and lastIndexOf functions.
+  // 内置的工厂函数, 创建一个索引查询器
+  // dir: 查询方向
+  // predicatedFind: 真值检测函数, 该函数只有在查询元素为NaN才会使用
+  // sortedIndex: 有序数组的索引获得函数. 如果设置了该参数, 将嘉定数组已经有序, 从而更高效通过针对有序数组的查询函数来优化查询性能
   var createIndexFinder = function(dir, predicateFind, sortedIndex) {
     return function(array, item, idx) {
       var i = 0, length = getLength(array);
+      // 如果设定了查询起点, 且查询起点格式正确(Number)
       if (typeof idx == 'number') {
+        // 校正查询起点
         if (dir > 0) {
           i = idx >= 0 ? idx : Math.max(idx + length, i);
         } else {
           length = idx >= 0 ? Math.min(idx + 1, length) : idx + length + 1;
         }
       } else if (sortedIndex && idx && length) {
+        // 如果传递sortedIndex函数, 则先假设array为排序好的, 获得item在array中的位置
         idx = sortedIndex(array, item);
+        // 验证这个假设是否真确
         return array[idx] === item ? idx : -1;
       }
+      // 如果item为NaN, 需要通过predicateFind来查找
       if (item !== item) {
         idx = predicateFind(slice.call(array, i, length), _.isNaN);
         return idx >= 0 ? idx + i : -1;
       }
+      // 否则直接通过 === 进行查找
       for (idx = dir > 0 ? i : length - 1; idx >= 0 && idx < length; idx += dir) {
         if (array[idx] === item) return idx;
       }
+      // 查找不到的情况返回-1
       return -1;
     };
   };
 
-  // Return the position of the first occurrence of an item in an array,
-  // or -1 if the item is not included in the array.
-  // If the array is large and already in sort order, pass `true`
-  // for **isSorted** to use binary search.
+  // 通过内置的工厂函数createIndexFinder创建一个索引查找器
+  // function(array, item, idx)
+  // array: 待搜索数组
+  // item: 待搜索对象
+  // idx: 查询起点
   _.indexOf = createIndexFinder(1, _.findIndex, _.sortedIndex);
   _.lastIndexOf = createIndexFinder(-1, _.findLastIndex);
 
@@ -947,7 +990,7 @@
     return _.partial(wrapper, func);
   };
 
-  // Returns a negated version of the passed-in predicate.
+  // 用于反义predicate的执行结果
   _.negate = function(predicate) {
     return function() {
       return !predicate.apply(this, arguments);
@@ -992,6 +1035,7 @@
   // often you call it. Useful for lazy initialization.
   _.once = _.partial(_.before, 2);
 
+  // restArgs别名
   _.restArgs = restArgs;
 
   // Object Functions
@@ -1124,7 +1168,7 @@
   // (https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object/assign)
   _.extendOwn = _.assign = createAssigner(_.keys);
 
-  // Returns the first key on an object that passes a predicate test.
+  // 返回obj中第一个满足条件的predicate的key
   _.findKey = function(obj, predicate, context) {
     predicate = cb(predicate, context);
     var keys = _.keys(obj), key;
@@ -1200,13 +1244,14 @@
     return obj;
   };
 
-  // Returns whether an object has a given set of `key:value` pairs.
+  // 判断obj是否满足attrs
   _.isMatch = function(object, attrs) {
     var keys = _.keys(attrs), length = keys.length;
     if (object == null) return !length;
     var obj = Object(object);
     for (var i = 0; i < length; i++) {
       var key = keys[i];
+      // 一旦遇到value不等, 或者atrrs中的key不在obj中, 立即返回false
       if (attrs[key] !== obj[key] || !(key in obj)) return false;
     }
     return true;
@@ -1464,8 +1509,7 @@
     };
   };
 
-  // Returns a predicate for checking whether an object has a given set of
-  // `key:value` pairs.
+  // 返回一个校验过程, 用以校验对象的属性是否匹配给定的属性列表
   _.matcher = _.matches = function(attrs) {
     attrs = _.extendOwn({}, attrs);
     return function(obj) {
