@@ -339,7 +339,7 @@
     return _.indexOf(obj, item, fromIndex) >= 0;
   };
 
-  // Invoke a method (with arguments) on every item in a collection.
+  // 迭代obj, 对每个元素调用其成员方法method
   _.invoke = restArgs(function(obj, path, args) {
     var contextPath, func;
     if (_.isFunction(path)) {
@@ -351,12 +351,14 @@
     return _.map(obj, function(context) {
       var method = func;
       if (!method) {
+        // 如果path为数组
         if (contextPath && contextPath.length) {
           context = deepGet(context, contextPath);
         }
         if (context == null) return void 0;
         method = context[path];
       }
+      // 如果对象不存在方法, 则返回null
       return method == null ? method : method.apply(context, args);
     });
   });
@@ -377,10 +379,12 @@
     return _.find(obj, _.matcher(attrs));
   };
 
-  // Return the maximum element (or element-based computation).
+  // 根据iteratee声明的大小关系, 获得obj最大元素
   _.max = function(obj, iteratee, context) {
+    // 默认返回-Infinity
     var result = -Infinity, lastComputed = -Infinity,
         value, computed;
+    // 如果没有传递iteratee, 则按值进行比较
     if (iteratee == null || (typeof iteratee == 'number' && typeof obj[0] != 'object') && obj != null) {
       obj = isArrayLike(obj) ? obj : _.values(obj);
       for (var i = 0, length = obj.length; i < length; i++) {
@@ -390,6 +394,7 @@
         }
       }
     } else {
+      // 否则, 以iteratee为最大值依据, 每次传入当前迭代之给iteratee, 算出最大值
       iteratee = cb(iteratee, context);
       _.each(obj, function(v, index, list) {
         computed = iteratee(v, index, list);
@@ -402,7 +407,7 @@
     return result;
   };
 
-  // Return the minimum element (or element-based computation).
+  // 根据iteratee声明的大小关系, 获得obj最小元素
   _.min = function(obj, iteratee, context) {
     var result = Infinity, lastComputed = Infinity,
         value, computed;
@@ -480,34 +485,44 @@
     }), 'value');
   };
 
-  // An internal function used for aggregate "group by" operations.
+  // 内置函数group, 类似group by操作
+  // behavior: 获得组别后的行为, 即当确定一个分组后, 在该分组上施加的行为
+  // partition: 是否进行划分, 即是否将一个集合一分为二
   var group = function(behavior, partition) {
+    // obj: 待分组结合对象
+    // iteratee: 集合迭代器, 同样会被内置函数cb优化
+    // context: 执行上下文
     return function(obj, iteratee, context) {
+      // 分组结果初始化
+      // 如果是进行划分的话, 则结果分为两个组
       var result = partition ? [[], []] : {};
       iteratee = cb(iteratee, context);
       _.each(obj, function(value, index) {
+        // 根据iteratee计算得到分组组别key
         var key = iteratee(value, index, obj);
+        // 获得组别后, 执行定义的行为
         behavior(result, value, key);
       });
       return result;
     };
   };
 
-  // Groups the object's values by a criterion. Pass either a string attribute
-  // to group by, or a function that returns the criterion.
+  // 对obj按照iteratee进行分组
+  // 如果分组结果中存在该分组, 将元素追加进该分组
+  // 否则新建一个分组, 并将元素放入
   _.groupBy = group(function(result, value, key) {
     if (_.has(result, key)) result[key].push(value); else result[key] = [value];
   });
 
-  // Indexes the object's values by a criterion, similar to `groupBy`, but for
-  // when you know that your index values will be unique.
+  // 对集合按照指定的关键字进行索引
+  // 对obj按照iteratee进行索引
+  // 当iteratee确定了一个分组后, _indexBy会设置该分组(索引)的对象为当前元素
   _.indexBy = group(function(result, value, key) {
     result[key] = value;
   });
 
-  // Counts instances of an object that group by a certain criterion. Pass
-  // either a string attribute to count by, or a function that returns the
-  // criterion.
+  // 对obj按照iteratee进行计算
+  // 当iteratee确定了一个分组后, _.countBy的行为: 如果该分组已存在, 则计数加一, 否则开始计数
   _.countBy = group(function(result, value, key) {
     if (_.has(result, key)) result[key]++; else result[key] = 1;
   });
@@ -533,6 +548,8 @@
 
   // Split a collection into two arrays: one whose elements all satisfy the given
   // predicate, and one whose elements all do not satisfy the predicate.
+  // 将obj按照iteratee进行分组
+  // 当iteratee确定了一个分组后, _.partion会将元素放入对应分组
   _.partition = group(function(result, value, pass) {
     result[pass ? 0 : 1].push(value);
   }, true);
