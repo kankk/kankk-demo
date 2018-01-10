@@ -843,19 +843,23 @@
   // Function (ahem) Functions
   // ------------------
 
-  // Determines whether to execute a function as a constructor
-  // or a normal function with the provided arguments.
+  // 内置绑定函数上下文的方法
+  // sourceFunc: 待绑定函数
+  // boundFunc: 绑定后函数
+  // context: 待绑定上下文
+  // callingContext: 执行上下文, 通常就是this
+  // args: 函数执行所需参数
   var executeBound = function(sourceFunc, boundFunc, context, callingContext, args) {
     if (!(callingContext instanceof boundFunc)) return sourceFunc.apply(context, args);
     var self = baseCreate(sourceFunc.prototype);
+    // 为了支持链式调用
     var result = sourceFunc.apply(self, args);
     if (_.isObject(result)) return result;
     return self;
   };
 
-  // Create a function bound to a given object (assigning `this`, and arguments,
-  // optionally). Delegates to **ECMAScript 5**'s native `Function.bind` if
-  // available.
+  // 将func的执行上下文绑定到context
+  // _.bind将为我们返回一个绑定了上下文的函数, 该函数的执行过程会限定执行上下文
   _.bind = restArgs(function(func, context, args) {
     if (!_.isFunction(func)) throw new TypeError('Bind must be called on a function');
     var bound = restArgs(function(callArgs) {
@@ -864,100 +868,133 @@
     return bound;
   });
 
-  // Partially apply a function by creating a version that has had some of its
-  // arguments pre-filled, without changing its dynamic `this` context. _ acts
-  // as a placeholder by default, allowing any combination of arguments to be
-  // pre-filled. Set `_.partial.placeholder` for a custom placeholder argument.
+  // 返回一个偏函数
+  // partial反映了新函数是原函数的一部分
   _.partial = restArgs(function(func, boundArgs) {
     var placeholder = _.partial.placeholder;
+    // 返回一个partial后的新函数
     var bound = function() {
+      // position用来标识当前赋值的arguments最新位置
       var position = 0, length = boundArgs.length;
+      // 初始化新函数执行的参数
       var args = Array(length);
       for (var i = 0; i < length; i++) {
+        // 对于最终调用时的位置`i`的参数
+        // 如果绑定参数的对应位置是占位符, 代表略过, 以新的参数赋值之, 并刷新最新位置`position`
+        // 否则以绑定参数赋值
         args[i] = boundArgs[i] === placeholder ? arguments[position++] : boundArgs[i];
       }
+      // 如果arguments还没有被消费完, 则剩余arguments全部添加到args
       while (position < arguments.length) args.push(arguments[position++]);
+      // 执行绑定函数的时候, 不改变上下文
       return executeBound(func, bound, this, this, args);
     };
     return bound;
   });
 
+  // 传入_表示为占位符
   _.partial.placeholder = _;
 
-  // Bind a number of an object's methods to that object. Remaining arguments
-  // are the method names to be bound. Useful for ensuring that all callbacks
-  // defined on an object belong to it.
+  // 绑定对象obj的所有制定成员方法中的执行上下文到obj
   _.bindAll = restArgs(function(obj, keys) {
     keys = flatten(keys, false, false);
     var index = keys.length;
     if (index < 1) throw new Error('bindAll must be passed function names');
+    // 遍历数组, 逐个通过_.bind进行绑定
     while (index--) {
       var key = keys[index];
       obj[key] = _.bind(obj[key], obj);
     }
   });
 
-  // Memoize an expensive function by storing its results.
+  // 为函数func提供缓存功能, hasher定义如何获得缓存
+  // _.memoize将缓存绑定到了缓存函数的cache属性上, 在创建一个缓存函数时, 除了提供函数func
+  // 用来计算外, 还可以提供hasher函数来自定义如何获得缓存的位置.
+  // 如果hasher不设置, 则以缓存函数的参数key标识缓存位置
   _.memoize = function(func, hasher) {
     var memoize = function(key) {
+      // 执行记忆函数的时候, 先获得缓存
       var cache = memoize.cache;
+      // 获得缓存地址
       var address = '' + (hasher ? hasher.apply(this, arguments) : key);
+      // 如果缓存没有命中, 则需要调用函数执行
       if (!_.has(cache, address)) cache[address] = func.apply(this, arguments);
+      // 否则直接返回缓存
       return cache[address];
     };
+    // 初始化记忆函数的缓存
     memoize.cache = {};
     return memoize;
   };
 
-  // Delays a function for the given number of milliseconds, and then calls
-  // it with the arguments supplied.
+  // 等待wait毫秒, 执行func
+  // _.delay会将待延迟执行的函数上下文"绑定"到null, 所以, 传入回调的时候, 
+  // 一定要确保上下文已经正确绑定(也就是先替换掉函数中this, 避免之后this被错误绑定)
   _.delay = restArgs(function(func, wait, args) {
     return setTimeout(function() {
       return func.apply(null, args);
     }, wait);
   });
 
-  // Defers a function, scheduling it to run after the current call stack has
-  // cleared.
+  // 将func异步化
+  // 通过偏函数实现, 创建了一个新函数, 该函数会被推迟至少1ms才执行, 亦即, 我们将传入的任务异步化
   _.defer = _.partial(_.delay, _, 1);
 
-  // Returns a function, that, when invoked, will only be triggered at most once
-  // during a given window of time. Normally, the throttled function will run
-  // as much as it can, without ever going more than once per `wait` duration;
-  // but if you'd like to disable the execution on the leading edge, pass
-  // `{leading: false}`. To disable execution on the trailing edge, ditto.
+  
+  // 节流
+  // options: leading 和 trailing
+  // leading: 是否设置节流前缘, 前缘的作用是保证第一次尝试调用的func会被立即执行, 否则第一调用也必须等待wait时间, 默认为true
+  // trailing: 是否设置节流后缘, 后缘的作用是当最后一次尝试调用func时, 如果func不能立即执行, 会延后func的执行, 默认为true
   _.throttle = function(func, wait, options) {
+    // timeout标识最后一次呗追踪的调用
+    // context和args缓存func执行时需要的上下文
+    // result缓存func执行结果
     var timeout, context, args, result;
+    // 最后一次func被调用的时间点
     var previous = 0;
     if (!options) options = {};
 
+    // 创建一个延后执行的函数包裹住func的执行过程
     var later = function() {
-      previous = options.leading === false ? 0 : _.now();
+      // 执行时, 刷新最后一次调用时间
+      previous = options.leading === false ? 0 : _.now(); // leading默认为ture
+      // 清空为此次执行设置的定时器
       timeout = null;
       result = func.apply(context, args);
       if (!timeout) context = args = null;
     };
 
+    // 返回一个throttle化的函数
     var throttled = function() {
+      // 尝试调用func时, 会首先记录当前时间戳
       var now = _.now();
-      if (!previous && options.leading === false) previous = now;
+      // 是否第一次调用
+      if (!previous && options.leading === false) previous = now; // leading默认为true
+      // func还要等待多久才能被调用 = 预设的最小等待时间 - (当前时间 - 上次调用的事件)
       var remaining = wait - (now - previous);
       context = this;
       args = arguments;
+      // 如果计算后能被立即执行
       if (remaining <= 0 || remaining > wait) {
+        // 清除之前设置的延迟执行, 就不存在某些回调一同发生的情况了
         if (timeout) {
           clearTimeout(timeout);
           timeout = null;
         }
+        // 刷新最后一次func调用的时间点
         previous = now;
+        // 执行func调用
         result = func.apply(context, args);
+        // 再次检查timeout, 因为func执行期间可能有新的timeout别设置, 如果timeout被清空了, 代表不再有等待执行的func，也清空context和args
         if (!timeout) context = args = null;
-      } else if (!timeout && options.trailing !== false) {
+      } else if (!timeout && options.trailing !== false) {  // trailing默认为true
+        // 如果设置了trailing edge, name暂缓此次调用尝试的执行
         timeout = setTimeout(later, remaining);
       }
       return result;
     };
 
+    // 不在控制函数执行调用频率
     throttled.cancel = function() {
       clearTimeout(timeout);
       previous = 0;
@@ -967,10 +1004,7 @@
     return throttled;
   };
 
-  // Returns a function, that, as long as it continues to be invoked, will not
-  // be triggered. The function will be called after it stops being called for
-  // N milliseconds. If `immediate` is passed, trigger the function on the
-  // leading edge, instead of the trailing.
+  // 防抖
   _.debounce = function(func, wait, immediate) {
     var timeout, result;
 
@@ -980,12 +1014,18 @@
     };
 
     var debounced = restArgs(function(args) {
+      // 每次新的尝试调用func, 会使抛弃之前等待的func
       if (timeout) clearTimeout(timeout);
+      // 如果允许新的调用尝试立即执行
       if (immediate) {
+        // 如果之前尚没有调用尝试, name此次调用可以立马执行, 否则就需要等待
         var callNow = !timeout;
+        // 刷新timeout
         timeout = setTimeout(later, wait);
+        // 如果能被立即执行, 立即执行
         if (callNow) result = func.apply(this, args);
       } else {
+        // 否则, 这次尝试调用会延时wait个时间
         timeout = _.delay(later, wait, this, args);
       }
 
@@ -1000,10 +1040,9 @@
     return debounced;
   };
 
-  // Returns the first function passed as an argument to the second,
-  // allowing you to adjust arguments, run code before and after, and
-  // conditionally execute the original function.
+  // 使用wrapper对func进行包裹, 使func的执行前后能融入更多业务逻辑
   _.wrap = function(func, wrapper) {
+    // 借助偏函数将func传递给wrapper
     return _.partial(wrapper, func);
   };
 
@@ -1014,11 +1053,11 @@
     };
   };
 
-  // Returns a function that is the composition of a list of functions, each
-  // consuming the return value of the function that follows.
+  // 组合各个函数为一个新函数
+  // 在函数式编程中, 从右向左的组合顺序是标准的
   _.compose = function() {
-    var args = arguments;
-    var start = args.length - 1;
+    var args = arguments; // 函数序列
+    var start = args.length - 1;  // 以传入最后一个函数作为首个处理器
     return function() {
       var i = start;
       var result = args[start].apply(this, arguments);
@@ -1027,7 +1066,7 @@
     };
   };
 
-  // Returns a function that will only be executed on and after the Nth call.
+  // 创建一个函数, 该函数运行times次后, 才执行传入的回调func
   _.after = function(times, func) {
     return function() {
       if (--times < 1) {
@@ -1036,20 +1075,21 @@
     };
   };
 
-  // Returns a function that will only be executed up to (but not including) the Nth call.
+  // 创建一个函数, 该函数每次调用都会执行回调函数func, 直至制定times次数后, 执行结果不在改变
   _.before = function(times, func) {
+    // memo暂存最近一次的调用结果, 当调用次数达到times次后, memo不再改变
     var memo;
     return function() {
       if (--times > 0) {
         memo = func.apply(this, arguments);
       }
+      // 清除函数引用, 节省内存
       if (times <= 1) func = null;
       return memo;
     };
   };
 
-  // Returns a function that will be executed at most one time, no matter how
-  // often you call it. Useful for lazy initialization.
+  // 保证func只执行一次
   _.once = _.partial(_.before, 2);
 
   // restArgs别名
@@ -1058,54 +1098,63 @@
   // Object Functions
   // ----------------
 
-  // Keys in IE < 9 that won't be iterated by `for key in ...` and thus missed.
+  // IE9之前的版本存在的bug, 以下以不能被for key in ...所迭代
   var hasEnumBug = !{toString: null}.propertyIsEnumerable('toString');
   var nonEnumerableProps = ['valueOf', 'isPrototypeOf', 'toString',
                       'propertyIsEnumerable', 'hasOwnProperty', 'toLocaleString'];
 
   var collectNonEnumProps = function(obj, keys) {
     var nonEnumIdx = nonEnumerableProps.length;
+    // 通过对象构造函数获得对象的原型
     var constructor = obj.constructor;
+    // 如果构造函数合法, 且具有proototype属性, 那么prototype就是该obj的原型
+    // 否则默认obj的原型为Object.prototype
     var proto = _.isFunction(constructor) && constructor.prototype || ObjProto;
 
-    // Constructor is a special case.
+    // 如果对象有constructors属性, 且当前的属性集合不存在构造函数这一属性
     var prop = 'constructor';
+    // 需要将constructor属性添加到属性集合中
     if (_.has(obj, prop) && !_.contains(keys, prop)) keys.push(prop);
 
+    // 将不可枚举的属性也添加到属性集合中
     while (nonEnumIdx--) {
       prop = nonEnumerableProps[nonEnumIdx];
+      // 注意, 添加的属性只能是自有属性 (obj[prop] !== proto[prop])
       if (prop in obj && obj[prop] !== proto[prop] && !_.contains(keys, prop)) {
         keys.push(prop);
       }
     }
   };
 
-  // Retrieve the names of an object's own properties.
-  // Delegates to **ECMAScript 5**'s native `Object.keys`.
+  // 获得对象的所有属性名
   _.keys = function(obj) {
     if (!_.isObject(obj)) return [];
+    // 如果原生的Object.keys方法存在的话, 
+    // 直接调用Object.keys来获得自有属性
     if (nativeKeys) return nativeKeys(obj);
     var keys = [];
+    // 通过_.has, 剔除非自有属性
     for (var key in obj) if (_.has(obj, key)) keys.push(key);
-    // Ahem, IE < 9.
+    // IE9之前存在枚举bug, 需要校正最后的属性集合
     if (hasEnumBug) collectNonEnumProps(obj, keys);
     return keys;
   };
 
-  // Retrieve all the property names of an object.
+  // 获得obj所有属性, 包括原型链上的属性
   _.allKeys = function(obj) {
     if (!_.isObject(obj)) return [];
     var keys = [];
     for (var key in obj) keys.push(key);
-    // Ahem, IE < 9.
+    // IE9之前存在枚举bug, 需要校正最后的属性集合
     if (hasEnumBug) collectNonEnumProps(obj, keys);
     return keys;
   };
 
-  // Retrieve the values of an object's properties.
+  // 获得obj所有的值
   _.values = function(obj) {
     var keys = _.keys(obj);
     var length = keys.length;
+    // 定长初始化, 提前分配内存空间
     var values = Array(length);
     for (var i = 0; i < length; i++) {
       values[i] = obj[keys[i]];
@@ -1139,23 +1188,25 @@
     return pairs;
   };
 
-  // Invert the keys and values of an object. The values must be serializable.
+  // 调换obj的属性和值
   _.invert = function(obj) {
     var result = {};
     var keys = _.keys(obj);
     for (var i = 0, length = keys.length; i < length; i++) {
+      // 可能出现后面的覆盖前面的情况
       result[obj[keys[i]]] = keys[i];
     }
     return result;
   };
 
-  // Return a sorted list of the function names available on the object.
-  // Aliased as `methods`.
+  // 获得obj含有的方法
   _.functions = _.methods = function(obj) {
     var names = [];
     for (var key in obj) {
+      // 通过_.isFunction判断值是否为方法类型
       if (_.isFunction(obj[key])) names.push(key);
     }
+    // 最后返回的函数列表会按字典序进行排序
     return names.sort();
   };
 
@@ -1460,15 +1511,18 @@
     return obj === void 0;
   };
 
-  // Shortcut function for checking if an object has a given property directly
-  // on itself (in other words, not on a prototype).
+  // 该函数依赖于JavaScript原生的Object.prototype.hasOwnProperty, 因而他判断的是自身的属性, 
+  // 而不会去寻找原型链的属性
   _.has = function(obj, path) {
+    // 如果path不为数组
     if (!_.isArray(path)) {
       return obj != null && hasOwnProperty.call(obj, path);
     }
+    // 如果path为数组
     var length = path.length;
     for (var i = 0; i < length; i++) {
       var key = path[i];
+      // 如果其中一个key不在obj中, 则返回false
       if (obj == null || !hasOwnProperty.call(obj, key)) {
         return false;
       }
