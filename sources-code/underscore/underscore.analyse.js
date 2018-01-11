@@ -43,7 +43,8 @@
   // 这种做法是出于性能上的考虑, 避免每次调用baseCreate都要创建空的构造函数
   var Ctor = function(){};
 
-  // Create a safe reference to the Underscore object for use below.
+  // 创建一个新的underscore对象, 从而能够调用underscore提供的方法
+  // 并且记录被包裹的对象obj
   var _ = function(obj) {
     if (obj instanceof _) return obj;
     if (!(this instanceof _)) return new _(obj);
@@ -95,9 +96,7 @@
 
   var builtinIteratee;
 
-  // An internal function to generate callbacks that can be applied to each
-  // element in a collection, returning the desired result — either `identity`,
-  // an arbitrary callback, a property matcher, or a property accessor.
+  // 内置函数生成一个支持多种情况的回调函数
   var cb = function(value, context, argCount) {
     // 是否用自定义的iteratee, underscore支持通过覆盖_.iteratee属性自定义iteratee
     // 发布版1.8.3不支持
@@ -112,9 +111,7 @@
     return _.property(value);
   };
 
-  // External wrapper for our callback generator. Users may customize
-  // `_.iteratee` if they want additional predicate/iteratee shorthand styles.
-  // This abstraction hides the internal-only argCount argument.
+
   // 首先把内建的iteratt赋值给buildtinIteratee变量
   _.iteratee = builtinIteratee = function(value, context) {
     return cb(value, context, Infinity);
@@ -185,12 +182,10 @@
     return length ? obj : void 0;
   };
 
-  // Helper for collection methods to determine whether a collection
-  // should be iterated as an array or as an object.
-  // Related: http://people.mozilla.org/~jorendorff/es6-draft.html#sec-tolength
-  // Avoids a very nasty iOS 8 JIT bug on ARM-64. #2094
+  // 最大数组长度
   var MAX_ARRAY_INDEX = Math.pow(2, 53) - 1;
   var getLength = shallowProperty('length');
+  // 内置函数, 判断collection是否为Array或者ArrayLike对象
   var isArrayLike = function(collection) {
     var length = getLength(collection);
     return typeof length == 'number' && length >= 0 && length <= MAX_ARRAY_INDEX;
@@ -239,8 +234,6 @@
   // dir用于区分reduce方向
   // initial标识了是否传入了规约起点
   var createReduce = function(dir) {
-    // Wrap code that reassigns argument variables in a separate function than
-    // the one that accesses `arguments.length` to avoid a perf hit. (#1991)
     var reducer = function(obj, iteratee, memo, initial) {
       var keys = !isArrayLike(obj) && _.keys(obj),
           length = (keys || obj).length,
@@ -355,7 +348,7 @@
     });
   });
 
-  // 取出obj中key对应的值
+  // 取出obj中所有key对应的值
   _.pluck = function(obj, key) {
     // 迭代集合, 每个迭代元素返回其对应属性的对应值
     return _.map(obj, _.property(key));
@@ -456,15 +449,17 @@
     return sample.slice(0, n);
   };
 
-  // Sort the object's values by a criterion produced by an iteratee.
+  // 根据比较条件ieratee, 对obj进行排序
   _.sortBy = function(obj, iteratee, context) {
     var index = 0;
     iteratee = cb(iteratee, context);
+    // 先通过map生成新的对象集合, 改对象提供了通过iteratee计算后的值, 方便排序
+    // 最后通过pluck把值取出
     return _.pluck(_.map(obj, function(value, key, list) {
       return {
         value: value,
         index: index++,
-        criteria: iteratee(value, key, list)
+        criteria: iteratee(value, key, list)  // 排序准则
       };
     }).sort(function(left, right) {
       var a = left.criteria;
@@ -532,14 +527,12 @@
     return _.values(obj);
   };
 
-  // Return the number of elements in an object.
+  // 返回数组长度或对象属性数量
   _.size = function(obj) {
     if (obj == null) return 0;
     return isArrayLike(obj) ? obj.length : _.keys(obj).length;
   };
 
-  // Split a collection into two arrays: one whose elements all satisfy the given
-  // predicate, and one whose elements all do not satisfy the predicate.
   // 将obj按照iteratee进行分组
   // 当iteratee确定了一个分组后, _.partion会将元素放入对应分组
   _.partition = group(function(result, value, pass) {
@@ -549,33 +542,29 @@
   // Array Functions
   // ---------------
 
-  // Get the first element of an array. Passing **n** will return the first N
-  // values in the array. Aliased as `head` and `take`. The **guard** check
-  // allows it to work with `_.map`.
+  // 获得array的前n个元素
   _.first = _.head = _.take = function(array, n, guard) {
     if (array == null || array.length < 1) return void 0;
+    // 若不传递n, 则返回数组首个元素
     if (n == null || guard) return array[0];
     return _.initial(array, array.length - n);
   };
 
-  // Returns everything but the last entry of the array. Especially useful on
-  // the arguments object. Passing **n** will return all the values in
-  // the array, excluding the last N.
+  // 获得array的除了最后n个元素以外的元素
+  // 基于 Array.prototype.slice, 并且对 n 进行了校正, 如果没有传递 n, 则返回除了最末元素以外的所有元素
   _.initial = function(array, n, guard) {
     return slice.call(array, 0, Math.max(0, array.length - (n == null || guard ? 1 : n)));
   };
 
-  // Get the last element of an array. Passing **n** will return the last N
-  // values in the array.
+  // 获得array的后n个元素
   _.last = function(array, n, guard) {
     if (array == null || array.length < 1) return void 0;
+    // 若不传递n, 则返回数组最后一个元素
     if (n == null || guard) return array[array.length - 1];
     return _.rest(array, Math.max(0, array.length - n));
   };
 
-  // Returns everything but the first entry of the array. Aliased as `tail` and `drop`.
-  // Especially useful on the arguments object. Passing an **n** will return
-  // the rest N values in the array.
+  // 返回arra中除了前n个元素外的所有元素
   _.rest = _.tail = _.drop = function(array, n, guard) {
     return slice.call(array, n == null || guard ? 1 : n);
   };
@@ -585,29 +574,35 @@
     return _.filter(array, Boolean);
   };
 
-  // Internal implementation of a recursive `flatten` function.
+  // 内部函数, _.flatten的逻辑实现
   var flatten = function(input, shallow, strict, output) {
     output = output || [];
-    var idx = output.length;
+    var idx = output.length;  // 输出数组的下标
     for (var i = 0, length = getLength(input); i < length; i++) {
+      // 获得元素值
       var value = input[i];
+      // array/array-like的情况
       if (isArrayLike(value) && (_.isArray(value) || _.isArguments(value))) {
-        // Flatten current level of array or arguments object.
+        // 如果不是深展开
+        // 只是从value(数组)中不断取出元素赋值到output
         if (shallow) {
           var j = 0, len = value.length;
           while (j < len) output[idx++] = value[j++];
         } else {
+          // 否则需要递归展开
           flatten(value, shallow, strict, output);
+          // 刷新下标
           idx = output.length;
         }
       } else if (!strict) {
+        // 如果不是严格模式, 则value可以不是数组
         output[idx++] = value;
       }
     }
     return output;
   };
 
-  // Flatten out an array, either recursively (by default), or just one level.
+  // 展开array, 通过shallow指明是深展开还是浅展开
   _.flatten = function(array, shallow) {
     return flatten(array, shallow, false);
   };
@@ -617,13 +612,10 @@
     return _.difference(array, otherArrays);
   });
 
-  // Produce a duplicate-free version of the array. If the array has already
-  // been sorted, you have the option of using a faster algorithm.
-  // The faster algorithm will not work with an iteratee if the iteratee
-  // is not a one-to-one function, so providing an iteratee will disable
-  // the faster algorithm.
-  // Aliased as `unique`.
+  // 根据iteratee设置的重复标准, 对array进行去重
+  // 通过isSorted, 提高对有序数组的去重效率
   _.uniq = _.unique = function(array, isSorted, iteratee, context) {
+    // 如果第二个参数不是bool, 则应当理解为比较函数, 且默认是没有排序的数组
     if (!_.isBoolean(isSorted)) {
       context = iteratee;
       iteratee = isSorted;
@@ -631,33 +623,42 @@
     }
     if (iteratee != null) iteratee = cb(iteratee, context);
     var result = [];
-    var seen = [];
+    var seen = [];  // 标识数组
     for (var i = 0, length = getLength(array); i < length; i++) {
       var value = array[i],
           computed = iteratee ? iteratee(value, i, array) : value;
+      // 如果排好序了, 直接通过比较操作 !==
       if (isSorted && !iteratee) {
+        // 如果已经排序, seen只需要反映最近一次见到的元素
+        // !i: 第一个元素放入结果数组
+        // seen !== computed 没有见过的元素放入结果数组
         if (!i || seen !== computed) result.push(value);
+        // 刷新最近一次所见
         seen = computed;
       } else if (iteratee) {
+        // 如果尚未排序, 且存在比较函数, 亦即不能直接通过 === 判断
+        // 那么就无法直接通过.contains(result, value)判断value是否已经存在
+        // 这种情况下就需要借助于seen这个辅助数组存储计算后的数组元素
         if (!_.contains(seen, computed)) {
           seen.push(computed);
           result.push(value);
         }
       } else if (!_.contains(result, value)) {
+        // 否则直接通过contains进行判断
         result.push(value);
       }
     }
     return result;
   };
 
-  // Produce an array that contains the union: each distinct element from all of
-  // the passed-in arrays.
+  // 求数组并集
   _.union = restArgs(function(arrays) {
+    // 先要浅展开arrays, 然后去重得到数组的并集
     return _.uniq(flatten(arrays, true, true));
   });
 
-  // Produce an array that contains every item shared between all the
-  // passed-in arrays.
+  // 求数组的交集
+  // 思路: 遍历第一个数组的每个元素, 在之后的所有数组中查找是否有该元素, 有则放入结果数组
   _.intersection = function(array) {
     var result = [];
     var argsLength = arguments.length;
@@ -673,8 +674,8 @@
     return result;
   };
 
-  // Take the difference between one array and a number of other arrays.
-  // Only the elements present in just the first array will remain.
+  // 求数组的差集
+  // 思路: 让剩余的数组为rest, 遍历第一个数组array, 保留array中存在的, 而rest中不存在的值
   _.difference = restArgs(function(array, rest) {
     rest = flatten(rest, true, true);
     return _.filter(array, function(value){
@@ -682,25 +683,25 @@
     });
   });
 
-  // Complement of _.zip. Unzip accepts an array of arrays and groups
-  // each array's elements on shared indices.
+  // 解压array
   _.unzip = function(array) {
+    // 原数组的长度反应最后分组的数目
     var length = array && _.max(array, getLength).length || 0;
+    // 结果数组与原数组等长
     var result = Array(length);
 
+    // 分别抽离元素放到新数组
     for (var index = 0; index < length; index++) {
       result[index] = _.pluck(array, index);
     }
     return result;
   };
 
-  // Zip together multiple lists into a single array -- elements that share
-  // an index go together.
+  // 压缩array
+  // 各个数组对应位置抽离元素, 组成新的数组; 将这些新数组再合并为一个数组
   _.zip = restArgs(_.unzip);
 
-  // Converts lists into objects. Pass either a single array of `[key, value]`
-  // pairs, or two parallel arrays of the same length -- one of keys, and one of
-  // the corresponding values. Passing by pairs is the reverse of _.pairs.
+  // 把[[key, value]...]或者[key...][values...]转变为对象
   _.object = function(list, values) {
     var result = {};
     for (var i = 0, length = getLength(list); i < length; i++) {
@@ -713,7 +714,6 @@
     return result;
   };
 
-  // Generator function to create the findIndex and findLastIndex functions.
   // 内置工厂函数, createIndexFinder的增强版
   // 不仅能查询直接量在集合中的位置, 也支持通过一个真值检测函数查找位置
   // dir: 搜索方向
@@ -797,9 +797,7 @@
   _.indexOf = createIndexFinder(1, _.findIndex, _.sortedIndex);
   _.lastIndexOf = createIndexFinder(-1, _.findLastIndex);
 
-  // Generate an integer Array containing an arithmetic progression. A port of
-  // the native Python `range()` function. See
-  // [the Python documentation](http://docs.python.org/library/functions.html#range).
+  // 设置步长step, 产生一个[start, stop)的序列
   _.range = function(start, stop, step) {
     if (stop == null) {
       stop = start || 0;
@@ -809,6 +807,7 @@
       step = stop < start ? -1 : 1;
     }
 
+    // Math.ceil向上取整
     var length = Math.max(Math.ceil((stop - start) / step), 0);
     var range = Array(length);
 
@@ -819,8 +818,7 @@
     return range;
   };
 
-  // Split an **array** into several arrays containing **count** or less elements
-  // of initial array.
+  // 将array划分为若干份, 每份count个元素, 再合并到一个数组
   _.chunk = function(array, count) {
     if (count == null || count < 1) return [];
 
@@ -1154,8 +1152,7 @@
     return values;
   };
 
-  // Returns the results of applying the iteratee to each element of the object.
-  // In contrast to _.map it returns an object.
+  // 一个映射过程就是将对象各个属性, 按照一定的规则, 逐个映射为新的对象属性
   _.mapObject = function(obj, iteratee, context) {
     iteratee = cb(iteratee, context);
     var keys = _.keys(obj),
@@ -1168,8 +1165,7 @@
     return results;
   };
 
-  // Convert an object into a list of `[key, value]` pairs.
-  // The opposite of _.object.
+  // 把obj的键值对转变为[[key, value]...]格式的数组
   _.pairs = function(obj) {
     var keys = _.keys(obj);
     var length = keys.length;
@@ -1294,9 +1290,7 @@
   // 非undefined的不会被覆盖
   _.defaults = createAssigner(_.allKeys, true);
 
-  // Creates an object that inherits from the given prototype object.
-  // If additional properties are provided then they will be added to the
-  // created object.
+  // 根据prototype创建对象并扩展props属性
   _.create = function(prototype, props) {
     var result = baseCreate(prototype);
     if (props) _.extendOwn(result, props);
@@ -1329,9 +1323,8 @@
     }
   }
 
-  // Invokes interceptor with the obj, and then returns obj.
-  // The primary purpose of this method is to "tap into" a method chain, in
-  // order to perform operations on intermediate results within the chain.
+  // 用obj作为参数来调用interceptor函数, 返回obj
+  // 主要意图是作为函数链式调用的用法, 为了对此对象执行操作并返回对象本身
   _.tap = function(obj, interceptor) {
     interceptor(obj);
     return obj;
@@ -1461,11 +1454,13 @@
     return eq(a, b);
   };
 
-  // Is a given array, string, or object empty?
-  // An "empty" object has no enumerable own-properties.
+  // 判断给定obj是否不包含任何值
   _.isEmpty = function(obj) {
+    // 判断obj 为undefined/null
     if (obj == null) return true;
+    // 判断obj为array/array-like但length=0
     if (isArrayLike(obj) && (_.isArray(obj) || _.isString(obj) || _.isArguments(obj))) return obj.length === 0;
+    // 判断obj属性集的长度为0
     return _.keys(obj).length === 0;
   };
 
@@ -1703,56 +1698,69 @@
     return prefix ? prefix + id : id;
   };
 
-  // By default, Underscore uses ERB-style template delimiters, change the
-  // following template settings to use alternative delimiters.
+  // 默认情况下，undersocre使用[ERB风格的模板](http://www.stuartellis.eu/articles/erb/)
+  // 但是也可以手动配置
   _.templateSettings = {
+    // 执行体通过<& &>包裹
     evaluate: /<%([\s\S]+?)%>/g,
+    // 插入立即数通过<%= %>包裹
     interpolate: /<%=([\s\S]+?)%>/g,
+    // 转义通过<%- %>包裹
     escape: /<%-([\s\S]+?)%>/g
   };
 
-  // When customizing `templateSettings`, if you don't want to define an
-  // interpolation, evaluation or escaping regex, we need one that is
-  // guaranteed not to match.
+  // 如果不想使用_.templateSettings里的正则
+  // 必须使用一个noMatch正则离开保证不匹配的情况
   var noMatch = /(.)^/;
 
-  // Certain characters need to be escaped so that they can be put into a
-  // string literal.
+  // 定义需要转义的字符, 以便他们之后能够被运用到模板中的字符串字面量中
   var escapes = {
     "'": "'",
     '\\': '\\',
     '\r': 'r',
     '\n': 'n',
-    '\u2028': 'u2028',
-    '\u2029': 'u2029'
+    '\u2028': 'u2028',  // 行分隔符
+    '\u2029': 'u2029' // 行结束符
   };
 
+  // 转义正则
   var escapeRegExp = /\\|'|\r|\n|\u2028|\u2029/g;
 
+  // 转义字符
   var escapeChar = function(match) {
     return '\\' + escapes[match];
   };
 
-  // JavaScript micro-templating, similar to John Resig's implementation.
-  // Underscore templating handles arbitrary delimiters, preserves whitespace,
-  // and correctly escapes quotes within interpolated code.
-  // NB: `oldSettings` only exists for backwards compatibility.
+  // 根据传入的文本text及配置settings, 生成模板
+  // 采用了ERB风格的模板, 同时, 也支持自定义模板风格
+  // 支持对HTML内容进行转义
+  // 支持传递一个变量标记, 这样, 模板编译的时候, 将不会用到with来限定作用域, 从而显著提高模板性能
+  // 在返回的模板函数中, 提供了一个source属性, 来获得编译后的模板函数源码, 从而支持服务器端用JST
+  // text: 文本
+  // settings: 模板配置
+  // oldSettings 改参数用于往后兼容
   _.template = function(text, settings, oldSettings) {
+    // 校正模板配置
     if (!settings && oldSettings) settings = oldSettings;
+    // 获得最终的模板配置
     settings = _.defaults({}, settings, _.templateSettings);
 
-    // Combine delimiters into one regular expression via alternation.
+    // 获得最终的匹配正则
+    // /<%-([\s\S]+?)%>|<%=([\s\S]+?)%>|<%([\s\S]+?)%>|$/g
     var matcher = RegExp([
       (settings.escape || noMatch).source,
       (settings.interpolate || noMatch).source,
       (settings.evaluate || noMatch).source
     ].join('|') + '|$', 'g');
 
-    // Compile the template source, escaping string literals appropriately.
     var index = 0;
+    // source用来保存最终的函数执行体
     var source = "__p+='";
+    // 正则替换模板内容, 逐个匹配, 逐个替换
     text.replace(matcher, function(match, escape, interpolate, evaluate, offset) {
+      // offset匹配到的子字符串在元字符串的偏移量
       source += text.slice(index, offset).replace(escapeRegExp, escapeChar);
+      // 从下一个匹配位置开始
       index = offset + match.length;
 
       if (escape) {
@@ -1768,7 +1776,7 @@
     });
     source += "';\n";
 
-    // If a variable is not specified, place data values in local scope.
+    // 如果没有在settings中声明变量, 则用with限定作用域
     if (!settings.variable) source = 'with(obj||{}){\n' + source + '}\n';
 
     source = "var __t,__p='',__j=Array.prototype.join," +
@@ -1777,26 +1785,31 @@
 
     var render;
     try {
+      // 动态创建渲染函数
       render = new Function(settings.variable || 'obj', '_', source);
     } catch (e) {
       e.source = source;
       throw e;
     }
 
+    // 最终返回一个模板函数, 通过给模板传递数据
+    // 最后通过render来渲染结果
     var template = function(data) {
       return render.call(this, data, _);
     };
 
-    // Provide the compiled source as a convenience for precompilation.
+    // 保留编译后的源码
     var argument = settings.variable || 'obj';
     template.source = 'function(' + argument + '){\n' + source + '}';
 
     return template;
   };
 
-  // Add a "chain" function. Start chaining a wrapped Underscore object.
+  // 为underscore对象的方法增加链式调用能力
   _.chain = function(obj) {
+    // 获得一个经underscore包裹后的实例
     var instance = _(obj);
+    // 标识当前实例支持链式调用
     instance._chain = true;
     return instance;
   };
@@ -1807,25 +1820,28 @@
   // can be used OO-style. This wrapper holds altered versions of all the
   // underscore functions. Wrapped objects may be chained.
 
-  // Helper function to continue chaining intermediate results.
+  // 该函数将会判断方法调用的结果
+  // 如果该方法的调用者被标识了需要链式化, 则链式化当前的方法执行结果
   var chainResult = function(instance, obj) {
     return instance._chain ? _(obj).chain() : obj;
   };
 
-  // Add your own custom functions to the Underscore object.
+  // 为underscore对象混入obj具有的功能
   _.mixin = function(obj) {
     _.each(_.functions(obj), function(name) {
       var func = _[name] = obj[name];
       _.prototype[name] = function() {
         var args = [this._wrapped];
         push.apply(args, arguments);
+        // 使用委托模式的apply
+        // 通过chainResult考虑了扩充的函数能够进行链式调用
         return chainResult(this, func.apply(_, args));
       };
     });
     return _;
   };
 
-  // Add all of the Underscore functions to the wrapper object.
+  // 为包裹对象混入所有underscore的方法
   _.mixin(_);
 
   // Add all mutator Array functions to the wrapper.
@@ -1847,7 +1863,7 @@
     };
   });
 
-  // Extracts the result from a wrapped and chained object.
+  // 从包裹对象/链式对象中获取值
   _.prototype.value = function() {
     return this._wrapped;
   };
