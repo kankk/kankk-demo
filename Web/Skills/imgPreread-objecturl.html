@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>图片预览-FileReader</title>
+</head>
+
+<body>
+  <input type="file" id="inputfile" multiple accept='image/png, image/jpeg, image/jpg, image/svg, image/gif'>
+  <label for="inputFile">上传图片</label>
+  <script>
+    function createObjectURL(file) {
+      if (window.URL) {
+        return window.URL.createObjectURL(file)
+      } else {
+        return window.webkitURL.createObjectURL(file)
+      }
+    }
+
+    function revokeObjectURL(file) {
+      if (window.URL) {
+        return window.URL.revokeObjectURL(file)
+      } else {
+        return window.webkitURL.revokeObjectURL(file)
+      }
+    }
+
+    var $input = document.getElementById('inputfile');
+    var body = document.body || document.getElementsByTagName('body')[0];
+
+    $input.addEventListener('change', function (e) {
+      var files = Array.from(e.target.files);
+      files.forEach(function (item) {
+        var image = new Image()
+        image.src = createObjectURL(item)
+        body.appendChild(image)
+        image.onload = function () {
+          revokeObjectURL(this.src)
+        }
+      });
+    }, false);
+  </script>
+</body>
+
+</html>
