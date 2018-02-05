@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Lazy Load: 懒加载</title>
+</head>
+
+<body>
+  <img id="img1" alt="">
+  <img id="img2" alt="">
+  <script>
+    setTimeout(function() {
+      var _img = document.getElementById('img1');
+      _img.src = '../../my-data/mangokk_orange_128.png';
+    }, 2000);
+
+    setTimeout(function() {
+      var _img = document.getElementById('img2');
+      _img.src = '../../my-data/mangokk_black_128.png';
+    }, 4000);
+  </script>
+</body>
+
+</html>
