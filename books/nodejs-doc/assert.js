@@ -28,21 +28,21 @@ assert.throws(
 // assert.doesNotThrow(block[, err][, message])
 // 断言block函数不会抛出错误
 // 当assert.doesNotThrow()被调用时, 它会立即调用block函数
-// assert.doesNotThrow(() => {
-//   assert.deepEqual(1, 2);
-// });
-// assert.doesNotThrow(
-//   () => {
-//     throw new TypeError('抛出TypeError');
-//   },
-//   SyntaxError
-// );
-// assert.doesNotThrow(
-//   () => {
-//     throw new TypeError('抛出一个带有Got unwanted exception (TypeError)信息的AssertionError');
-//   },
-//   TypeError
-// );
+assert.doesNotThrow(() => {
+  assert.deepEqual(1, 2);
+});
+assert.doesNotThrow(
+  () => {
+    throw new TypeError('抛出TypeError');
+  },
+  SyntaxError
+);
+assert.doesNotThrow(
+  () => {
+    throw new TypeError('抛出一个带有Got unwanted exception (TypeError)信息的AssertionError');
+  },
+  TypeError
+);
 
 // assert.equal(actual, expected[, message])
 // 使用相等运算符(==)测试actual与expected是否相等
@@ -50,14 +50,14 @@ assert.equal(1, '1');
 
 // assert.fail(actual, expected[, message[, operator[, stackStartFunction]]])
 // 抛出AssertionError
-// assert.fail(1, 2);
-// assert.fail(1, 2, undefined, '>');
+assert.fail(1, 2);
+assert.fail(1, 2, undefined, '>');
 
 // assert.ifError(value)
 // 如果value为真, 则抛出value. 可用于测试回调函数的error参数
 assert.ifError(undefined);
 assert.ifError(void 0);
-// assert.ifError(new Function());
+assert.ifError(new Function());
 
 // assert.notDeepEqual(actual, expected[, message])
 // 测试actual与expected是否不深度相等. 与assert.deepEqual()相反
