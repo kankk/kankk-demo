@@ -58,3 +58,31 @@ console.log(myEmitter.listenerCount('event'));
 // emitter.listeners(eventName)
 // 返回名为eventName的事件的监听器数组的副本
 console.log(myEmitter.listeners('event'));
+
+// emitter.on(eventName, listener)
+// eventName <any>: 事件名
+// listener <Function>: 回调函数
+// 添加listener函数到名为eventName的事件的监听器数组的末尾. 不会检查listener是否已被添加
+// 多次调用并传入相同的eventName和listener会导致listener被添加与调用多次
+// emitter.prependListener() 可以用于将事件监听器添加到监听器数组的开头
+
+// emitter.once(eventName, listener)
+// 添加一个单次listener函数到名为eventName的事件, 下次触发eventName事件时, 监听器会被移除, 然后调用
+// 返回一个EventEmitter引用, 可以链式调用
+// // emitter.prependOnceListener() 可以用于将事件监听器添加到监听器数组的开头
+
+// emitter.removeAllListeners([eventName])
+// 移除全部或指定eventName的监听器
+// Note: 在代码中移除其他地方添加的监听器是一个不好的做法, 尤其是当EventEmitter实例时其他组件或模块创建的
+
+// emitter.removeListener(eventName, listener)
+// 从名为eventName的事件的监听器数组中移除指定的listener
+// removeListener最多只会从监听器数组里移除一个监听实例. 如果任何单一的监听器被多次添加到制定的eventName的监听器数组中
+// 则必须多次调用removeListener才能移除每个实例
+// 在事件触发后, 最后一个监听器完成执行前, 任何remove调用都不会从emit()中移除它们
+
+// emitter.setMaxListeners(n)
+// 默认情况下, 如果为特定事件添加了超过10个监听器, 则EventEmitter会打印一个警告. 此限制有助于寻找内存泄漏. 
+// 但是, 并不是所有的事件都要被限制为10个.
+// emitter.setMaxListeners()允许修改制定EventEmitter实例的限制.
+// 值设为Infinity/0表明不限制监听器的数量
