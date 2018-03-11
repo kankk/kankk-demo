@@ -75,3 +75,6 @@ execFile('node', ['--version'], (error, stdout, stderr) => {
 // 这样做会导致父进程的事件循环不包含子进程的引用计数, 是的父进程独立于子进程退出, 除非子进程和父进程之间建立了一个IPC信道
 // 当使用detached选项来启动一个长期运行的进程时, 该进程不会再父进程退出后保持在后台运行, 除非提供了一个不连接父进程的stdio配置.
 // 如果父进程的stdio是继承的, 则子进程会保持连接到控制终端
+
+// options.stdio
+// options.stdio选项用于配置子进程与父进程之间建立的管道. 默认情况下, 子进程的stdin, stdout和stderr会重定向到ChildProcess对象上
