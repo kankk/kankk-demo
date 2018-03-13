@@ -52,3 +52,19 @@
 
 // subprocess.pid
 // <number>: 整数, 返回子进程的进程标识(PID)
+
+// subprocess.send(message[, sendHandle[, options]][, callback])
+// 当父进程和子进程之间建立一个IPC通道时, subprocess.send()方法可用于发送消息到子进程
+// 当子进程是一个Node.js实例时, 消息可以通过process.on('message')事件接收
+
+// subprocess.stderr
+// 一个代表子进程的stderr的可读流
+
+// subprocess.stdin
+// 一个代表子进程的stdin的可写流
+
+// subprocess.stdout
+// 一个代表子进程的stdout的可读流
+
+// subprocess.stdio
+// 一个到子进程的管道的稀疏数组, 对应着传给child_process.spawn()的选择中值被设为'pipe'的stdio
