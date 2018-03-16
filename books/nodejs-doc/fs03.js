@@ -23,3 +23,9 @@ const Stats = {
   ctime: 'Mon, 10 Oct 2011 23:24:11 GMT',
   birthtime: 'Mon, 10 Oct 2011 23:24:11 GMT'
 }
+
+// Stat时间值
+// atime: 访问时间 - 文件数据最近被访问的时间
+// mtime: 修改时间 - 文件数据最近被修改的时间
+// ctime: 变化时间 - 文件状态最近更新的时间(修改索引节点数据)
+// brithtime: 创建时间 - 文件创建的时间
