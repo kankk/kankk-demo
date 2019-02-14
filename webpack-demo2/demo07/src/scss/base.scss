@@ -1,0 +1,10 @@
+// 网站默认背景色：red
+$bgColor: red !default;
+*,
+body {
+  margin: 0;
+  padding: 0;
+}
+html {
+  background-color: $bgColor;
+}
