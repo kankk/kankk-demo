@@ -15,3 +15,7 @@
 14. [JavaScript深入之类数组对象与arguments](https://github.com/mqyqingfeng/Blog/issues/14) - arguments.js
 15. [JavaScript深入之创建对象的多种方式以及优缺点](https://github.com/mqyqingfeng/Blog/issues/15) - object.js
 16. [JavaScript深入之继承的多种方式和优缺点](https://github.com/mqyqingfeng/Blog/issues/16) - extend.js
+
+# 专题系列(topic)
+1. [JavaScript专题之跟着underscore学防抖](https://github.com/mqyqingfeng/Blog/issues/22) - debounce.js
+2. [JavaScript专题之跟着underscore学节流](https://github.com/mqyqingfeng/Blog/issues/26) - throttle.js
