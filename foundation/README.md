@@ -19,3 +19,20 @@
 # 专题系列(topic)
 1. [JavaScript专题之跟着underscore学防抖](https://github.com/mqyqingfeng/Blog/issues/22) - debounce.js
 2. [JavaScript专题之跟着underscore学节流](https://github.com/mqyqingfeng/Blog/issues/26) - throttle.js
+3. [JavaScript专题之数组去重](https://github.com/mqyqingfeng/Blog/issues/27) - dereplication.js
+4. [JavaScript专题之类型判断(上)](https://github.com/mqyqingfeng/Blog/issues/28) - typeof.js
+5. [JavaScript专题之类型判断(下)](https://github.com/mqyqingfeng/Blog/issues/30) - typeof.js
+6. [JavaScript专题之深浅拷贝](https://github.com/mqyqingfeng/Blog/issues/32) - clone.js
+7. [JavaScript专题之从零实现jQuery的extend](https://github.com/mqyqingfeng/Blog/issues/33) - extend.js
+8. [JavaScript专题之如何求数组的最大值和最小值](https://github.com/mqyqingfeng/Blog/issues/35) - min_max.js
+9. [JavaScript专题之数组扁平化](https://github.com/mqyqingfeng/Blog/issues/36) - flatten.js
+10. [JavaScript专题之学underscore在数组中查找指定元素](https://github.com/mqyqingfeng/Blog/issues/37) - find.js
+11. [JavaScript专题之jQuery通用遍历方法each的实现](https://github.com/mqyqingfeng/Blog/issues/40) - each.js
+12. [JavaScript专题之如何判断两个对象相等](https://github.com/mqyqingfeng/Blog/issues/41) - equal.js
+13. [JavaScript专题之函数柯里化](https://github.com/mqyqingfeng/Blog/issues/42) - curry.js
+14. [JavaScript专题之偏函数](https://github.com/mqyqingfeng/Blog/issues/43) - partial.js
+15. [JavaScript专题之惰性函数 ](https://github.com/mqyqingfeng/Blog/issues/44) - inertia.js
+16. [JavaScript专题之函数组合](https://github.com/mqyqingfeng/Blog/issues/45) - compose.js
+17. [JavaScript专题之函数记忆](https://github.com/mqyqingfeng/Blog/issues/46) - memoize.js
+18. [JavaScript专题之递归](https://github.com/mqyqingfeng/Blog/issues/49) - recursion.js
+20. [JavaScript专题之乱序](https://github.com/mqyqingfeng/Blog/issues/51) - random.js
