@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Sticky Footer 02</title>
+  <style type="text/css">
+  * {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    display: flex;
+    flex-flow: column;
+    min-height: 100vh;
+    overflow: auto;
+  }
+
+  .main {
+    flex: 1;
+  }
+
+  .main p {
+    height: 500px;
+  }
+
+  header {
+    height: 64px;
+    background-color: blue;
+  }
+
+  footer {
+    height: 32px;
+    background-color: red;
+  }
+  </style>
+</head>
+
+<body>
+  <header>
+    Header
+  </header>
+  <div class="main">
+    <p>Main Content</p>
+    <p>Main Content</p>
+    <p>Main Content</p>
+    <p>Main Content</p>
+    <p>Main Content</p>
+    <p>Main Content</p>
+  </div>
+  <footer>
+    Footer
+  </footer>
+</body>
+
+</html>

@@ -542,3 +542,8 @@ flex
 </style>
 ```
 * 此方法为伪等高(只有背景显示高度相同), 左右真实的高度其实不相等, 兼容性较好
+
+# Sticky Footer布局
+
+## stickyFooter01
+* flex布局
