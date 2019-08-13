@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>IntersectionObserver</title>
+  <style>
+    #wrap {
+      overflow-y: auto;
+    }
+    .cell {
+      height: 200px;
+    }
+    img {
+      width: 576px;
+      height: 324px; 
+    }
+  </style>
+</head>
+<body>
+  <div id="wrap">
+    <img data-src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1565669706109&di=ea1ed5051d128557f6757644321c7aff&imgtype=0&src=http%3A%2F%2Fpic1.win4000.com%2Fwallpaper%2Fc%2F53cdd1f7c1f21.jpg" alt="">
+    <div class="cell"></div>
+    <img data-src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1565669804731&di=3362aa4a59250eb1c45f012d7f51f7b4&imgtype=0&src=http%3A%2F%2Fpic1.win4000.com%2Fwallpaper%2F0%2F559b8b91b3afa.jpg" alt="">
+    <div class="cell"></div>
+    <img data-src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1565669821872&di=df0d83f149974bd5607baad79a55115a&imgtype=0&src=http%3A%2F%2Fpic.rmb.bdstatic.com%2F0f66eba710e01db49ae12d2deef4fb1c.jpeg" alt="">
+    <div class="cell"></div>
+    <img data-src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1565669825799&di=895f345b4830cd326b0f374a85274557&imgtype=0&src=http%3A%2F%2Fww1.sinaimg.cn%2Flarge%2F9bbc284bgw1f3tyuoswuej21hc0u0nm1.jpg" alt="">
+    <div class="cell"></div>
+    <img data-src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1565669846422&di=b2adf7917ff218402b4b3bfed9e30393&imgtype=0&src=http%3A%2F%2Fattachments.gfan.com%2Fforum%2F201611%2F17%2F232431ebmed8dmmgbciex0.jpg" alt="">
+    <div class="cell"></div>
+    <img data-src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1565669848352&di=fe8b5b6c78456f512fb0e982172784f8&imgtype=0&src=http%3A%2F%2Fpic1.win4000.com%2Fwallpaper%2F2019-07-04%2F5d1dc98c6e670.jpg" alt="">
+    <div class="cell"></div>
+    <img data-src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1565669848516&di=615b29b0f857fcdd98d588cebe65b2a0&imgtype=0&src=http%3A%2F%2Fpic1.win4000.com%2Fwallpaper%2F2019-06-28%2F5d1588a96612c.jpg" alt="">
+    <div class="cell"></div>
+    <img data-src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1565669849254&di=3be3b1523e03f7409e67a2b5c1a4cf6d&imgtype=0&src=http%3A%2F%2Fi0.hdslb.com%2Fbfs%2Farticle%2F939de33c09c659da1e4f8f991c0428d39e1a5d92.jpg" alt="">
+    <div class="cell"></div>
+    <img data-src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1565669849766&di=021ba6e7e16825bc96982a61de812ce0&imgtype=0&src=http%3A%2F%2Fimg.xiami.net%2Fimages%2Fcollect%2F318%2F18%2F22836318_1374250809.jpg" alt="">
+    <div class="cell"></div>
+    <img data-src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1565669850084&di=f2dabe01645ae327fe497c9d5f6beb9e&imgtype=0&src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F01e4435d2dc579a80120695c77cdb6.jpg%402o.jpg" alt="">
+    <div class="cell"></div>
+    <img data-src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1565669850666&di=5781ff311bdf064fb51478550d78be4b&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201804%2F18%2F2018041882506_fGU3F.jpeg" alt="">
+  </div>
+  <script>
+    const wrap = document.getElementById('wrap');
+    const imgs = document.querySelectorAll('[data-src]');
+    const observer = new IntersectionObserver(changes => {
+      for (const change of changes) {
+        if (change.isIntersecting) {
+          change.target.src = change.target.dataset.src;
+          observer.unobserve(change.target)
+        }
+      }
+    }, {
+    });
+
+    Array.from(imgs).forEach(element => {
+      observer.observe(element)
+    });
+
+  </script>
+</body>
+</html>
