@@ -12,7 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "lodash": "^4.17.11",
-    "marked": "^0.5.1"
+    "marked": "^1.1.1"
   },
   "devDependencies": {
     "clean-webpack-plugin": "^0.1.19",
